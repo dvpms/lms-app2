@@ -1,0 +1,105 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  password     String
+  role         Role          @default(STUDENT)
+  points       Int           @default(0)
+  level        Int           @default(1)
+  createdAt    DateTime      @default(now())
+  submissions  Submission[]
+  activityLogs ActivityLog[]
+}
+
+model Subject {
+  id                    String     @id @default(cuid())
+  title                 String
+  activitiesDescription String?
+  icon                  String?
+  materials             Material[]
+  quizzes               Quiz[]
+}
+
+model Material {
+  id        String   @id @default(cuid())
+  subjectId String
+  title     String
+  cards     Json
+  order     Int
+  subject   Subject  @relation(fields: [subjectId], references: [id])
+  quizzes   Quiz[]
+}
+
+model Quiz {
+  id          String       @id @default(cuid())
+  materialId  String?
+  subjectId   String?
+  title       String
+  type        QuizType     @default(MULTIPLE_CHOICE)
+  material    Material?    @relation(fields: [materialId], references: [id])
+  subject     Subject?     @relation(fields: [subjectId], references: [id])
+  questions   Question[]
+  submissions Submission[]
+}
+
+model Question {
+  id      String   @id @default(cuid())
+  quizId  String
+  text    String
+  image   String?
+  points  Int      @default(10)
+  quiz    Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  options Option[]
+}
+
+model Option {
+  id         String   @id @default(cuid())
+  questionId String
+  text       String
+  isCorrect  Boolean  @default(false)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Submission {
+  id          String   @id @default(cuid())
+  userId      String
+  quizId      String
+  score       Int
+  completedAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  quiz        Quiz     @relation(fields: [quizId], references: [id])
+}
+
+model ActivityLog {
+  id         String       @id @default(cuid())
+  userId     String
+  type       ActivityType
+  activityId String
+  points     Int
+  createdAt  DateTime     @default(now())
+  user       User         @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum QuizType {
+  MULTIPLE_CHOICE
+}
+
+enum ActivityType {
+  QUIZ
+  GAME
+}

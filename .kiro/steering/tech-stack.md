@@ -4,6 +4,15 @@ inclusion: always
 
 # Tech Stack Guidelines
 
+## Package Manager — pnpm
+
+- Use **pnpm** exclusively (faster installs, efficient disk usage via hard links)
+- `pnpm add <pkg>` — add dependency
+- `pnpm add -D <pkg>` — add dev dependency
+- `pnpm run <script>` — run scripts
+- `pnpm dlx <cmd>` — instead of `npx`
+- `pnpm create next-app@latest` — scaffold Next.js project
+
 ## Next.js (App Router)
 
 - Use App Router exclusively — no Pages Router
