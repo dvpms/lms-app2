@@ -6,6 +6,7 @@ import clsx from 'clsx'
 const variantClasses = {
   primary: 'bg-secondary-container text-on-secondary-container hover:bg-secondary-fixed-dim',
   secondary: 'bg-primary text-on-primary hover:bg-primary-container',
+  success: 'bg-secondary text-on-secondary hover:bg-secondary-fixed-dim',
   ghost: 'bg-transparent text-primary hover:bg-surface-container-low border-2 border-outline-variant',
 }
 
