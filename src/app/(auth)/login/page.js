@@ -157,9 +157,9 @@ export default function LoginPage() {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-on-surface-variant">
-            Tidak Punya Akun?{' '}
+            Belum Punya Akun?
             <Link href="/register" className="font-bold text-primary hover:underline">
-              Silahkan Registrasi Akun
+             {" "} Daftar
             </Link>
           </p>
         </div>

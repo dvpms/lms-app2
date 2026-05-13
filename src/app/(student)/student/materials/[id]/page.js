@@ -1,22 +1,16 @@
 'use client'
 
+import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useGetMaterialQuery } from '@/lib/redux/api/materialsApi'
-import { useGetMaterialsQuery } from '@/lib/redux/api/materialsApi'
 import MaterialViewer from '@/components/features/material/MaterialViewer'
-import MaterialNav from '@/components/features/material/MaterialNav'
 import Spinner from '@/components/ui/Spinner'
+import { ArrowLeft } from 'lucide-react'
 
 export default function MaterialPage() {
   const { id } = useParams()
   const { data: materialData, isLoading } = useGetMaterialQuery(id)
   const material = materialData?.data
-
-  const { data: materialsData } = useGetMaterialsQuery(
-    material?.subjectId ? { subjectId: material.subjectId } : undefined,
-    { skip: !material?.subjectId },
-  )
-  const materials = materialsData?.data ?? []
 
   if (isLoading) {
     return (
@@ -34,11 +28,17 @@ export default function MaterialPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-8">
+      <Link
+        href={material.subjectId ? `/student/subjects/${material.subjectId}` : '/student/subjects'}
+        className="inline-flex items-center gap-2 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors mb-4"
+        aria-label="Kembali"
+      >
+        <ArrowLeft className="size-4" aria-hidden="true" />
+        Kembali
+      </Link>
+
       <h1 className="text-2xl font-bold text-on-surface mb-6">{material.title}</h1>
       <MaterialViewer cards={cards} />
-      {materials.length > 0 && (
-        <MaterialNav materials={materials} currentMaterialId={id} />
-      )}
     </div>
   )
 }

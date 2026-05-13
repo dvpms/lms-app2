@@ -241,7 +241,7 @@ export default function RegisterPage() {
                 size="lg"
                 className="w-full rounded-full min-h-14 flex items-center justify-center gap-2"
               >
-                <span>{loading ? 'Memuat...' : 'Daftar Sekarang'}</span>
+                <span>{loading ? 'Mengirim...' : 'Daftar'}</span>
                 <ArrowRight className="h-5 w-5" aria-hidden="true" />
               </Button>
             </div>
