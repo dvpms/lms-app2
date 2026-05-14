@@ -39,9 +39,15 @@ export default function LoginPage() {
       return
     }
 
-    const sessionRes = await fetch('/api/auth/session')
-    const session = await sessionRes.json()
-    const role = session?.user?.role
+    // Poll session until role is available (avoids race condition with cookie)
+    let role = null
+    for (let i = 0; i < 5; i++) {
+      const sessionRes = await fetch('/api/auth/session')
+      const session = await sessionRes.json()
+      role = session?.user?.role
+      if (role) break
+      await new Promise((resolve) => setTimeout(resolve, 300))
+    }
 
     if (role === 'ADMIN') router.push('/admin/dashboard')
     else router.push('/student/dashboard')
