@@ -1,13 +1,45 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { useUploadImageMutation } from '@/lib/redux/api/uploadApi'
 import Button from '@/components/ui/Button'
 
-export default function ImageUpload({ onUpload, currentUrl }) {
+/**
+ * Extract Cloudinary public_id from a secure URL.
+ * e.g. https://res.cloudinary.com/demo/image/upload/v123/ceriaedu/subjects/file.jpg
+ * → ceriaedu/subjects/file
+ */
+function extractPublicId(url) {
+  if (!url) return null
+  try {
+    const parts = url.split('/upload/')
+    if (parts.length < 2) return null
+    // Remove version segment (v12345/) if present, then strip extension
+    const withoutVersion = parts[1].replace(/^v\d+\//, '')
+    return withoutVersion.replace(/\.[^/.]+$/, '')
+  } catch {
+    return null
+  }
+}
+
+async function deleteFromCloudinary(url) {
+  const public_id = extractPublicId(url)
+  if (!public_id) return
+  try {
+    await fetch('/api/upload', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ public_id }),
+    })
+  } catch {
+    // Non-critical — log silently, don't block upload
+    console.warn('Failed to delete old image from Cloudinary:', public_id)
+  }
+}
+
+export default function ImageUpload({ onUpload, currentUrl, folder = 'ceriaedu' }) {
   const fileInputRef = useRef(null)
-  const [uploadImage, { isLoading }] = useUploadImageMutation()
   const [preview, setPreview] = useState(currentUrl ?? null)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
   async function handleFileChange(e) {
@@ -15,16 +47,33 @@ export default function ImageUpload({ onUpload, currentUrl }) {
     if (!file) return
 
     setError('')
+    setIsLoading(true)
+
+    // Delete old image from Cloudinary before uploading new one
+    if (preview) {
+      await deleteFromCloudinary(preview)
+    }
+
     const formData = new FormData()
     formData.append('file', file)
+    formData.append('folder', folder)
 
-    const res = await uploadImage(formData)
-    if (res.data) {
-      const url = res.data.data.public_url
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const json = await res.json()
+
+      if (!res.ok) {
+        setError(json.error ?? 'Gagal mengunggah gambar')
+        return
+      }
+
+      const url = json.data.public_url
       setPreview(url)
       onUpload?.(url)
-    } else {
+    } catch {
       setError('Gagal mengunggah gambar')
+    } finally {
+      setIsLoading(false)
     }
   }
 

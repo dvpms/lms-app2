@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
+import ImageUpload from '@/components/features/admin/ImageUpload'
 
 export default function SubjectForm({ initial, onSubmit, onCancel, isLoading }) {
   const [form, setForm] = useState({
@@ -13,6 +14,10 @@ export default function SubjectForm({ initial, onSubmit, onCancel, isLoading }) 
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  function handleIconUpload(url) {
+    setForm((prev) => ({ ...prev, icon: url }))
   }
 
   function handleSubmit(e) {
@@ -35,12 +40,16 @@ export default function SubjectForm({ initial, onSubmit, onCancel, isLoading }) 
         value={form.activitiesDescription}
         onChange={handleChange}
       />
-      <Input
-        label="Icon (emoji atau URL)"
-        name="icon"
-        value={form.icon}
-        onChange={handleChange}
-      />
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-semibold text-on-surface-variant">
+          Gambar Subject
+        </label>
+        <ImageUpload
+          currentUrl={form.icon}
+          onUpload={handleIconUpload}
+          folder="ceriaedu/subjects"
+        />
+      </div>
       <div className="flex gap-3 justify-end">
         {onCancel && (
           <Button type="button" variant="ghost" onClick={onCancel}>

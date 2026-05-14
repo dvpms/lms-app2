@@ -3,7 +3,20 @@ const slideRenderers = {
     <h2 className="text-2xl font-bold text-on-surface leading-tight">{value}</h2>
   ),
   text: ({ value }) => (
-    <p className="text-base text-on-surface-variant leading-relaxed">{value}</p>
+    <div
+      className="prose prose-sm max-w-none text-on-surface-variant leading-relaxed
+        [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-on-surface [&_h2]:mb-2
+        [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-on-surface [&_h3]:mb-1
+        [&_strong]:font-semibold [&_strong]:text-on-surface
+        [&_em]:italic
+        [&_u]:underline
+        [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1
+        [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1
+        [&_p]:mb-2 last:[&_p]:mb-0
+        [&_[style*='text-align:_center']]:text-center
+        [&_[style*='text-align:_right']]:text-right"
+      dangerouslySetInnerHTML={{ __html: value }}
+    />
   ),
   image: ({ value }) => (
     <img
