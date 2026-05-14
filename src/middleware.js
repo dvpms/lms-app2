@@ -14,7 +14,7 @@ function isStudentRoute(pathname) {
 
 export async function middleware(request) {
   const { pathname } = request.nextUrl
-  const token = await getToken({ req: request })
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
 
   if (!token) {
     return NextResponse.redirect(new URL('/login', request.url))

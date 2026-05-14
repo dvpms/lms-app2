@@ -27,6 +27,9 @@ yarn-error.log*
 
 # vercel
 .vercel
+.vscode
 
 # kiro — keep specs and steering in git, ignore local settings only
-.kiro
+.kiro/
+.kiro/specs
+.kiro/steering
