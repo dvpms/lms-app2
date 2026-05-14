@@ -2,7 +2,7 @@ import { getToken } from 'next-auth/jwt'
 import { NextResponse } from 'next/server'
 
 const ADMIN_PREFIX = '/admin'
-const STUDENT_PREFIXES = ['/dashboard', '/subjects', '/materials', '/quiz', '/games', '/leaderboard', '/profile']
+const STUDENT_PREFIXES = ['/student/dashboard', '/student/subjects', '/student/materials', '/student/quiz', '/student/games', '/student/leaderboard', '/student/profile']
 
 function isAdminRoute(pathname) {
   return pathname.startsWith(ADMIN_PREFIX)
@@ -32,5 +32,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/dashboard/:path*', '/subjects/:path*', '/materials/:path*', '/quiz/:path*', '/games/:path*', '/leaderboard/:path*', '/profile/:path*'],
+  matcher: ['/admin/:path*', '/student/:path*'],
 }
