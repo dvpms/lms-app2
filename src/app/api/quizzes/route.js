@@ -14,7 +14,11 @@ export async function GET(request) {
         ...(materialId ? { materialId } : {}),
         ...(subjectId ? { subjectId } : {}),
       },
-      include: { questions: { include: { options: true } } },
+      include: {
+        questions: { include: { options: true } },
+        material: { select: { id: true, title: true } },
+        subject: { select: { id: true, title: true } },
+      },
     })
     return NextResponse.json({ data: quizzes })
   } catch (error) {

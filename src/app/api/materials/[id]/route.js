@@ -5,8 +5,9 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(_request, { params }) {
   try {
+    const { id } = await params
     const material = await prisma.material.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { subject: true, quizzes: true },
     })
     if (!material) {
@@ -26,9 +27,10 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const body = await request.json()
     const material = await prisma.material.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title: body.title,
         cards: body.cards,
@@ -50,7 +52,8 @@ export async function DELETE(_request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    await prisma.material.delete({ where: { id: params.id } })
+    const { id } = await params
+    await prisma.material.delete({ where: { id } })
     return NextResponse.json({ data: { message: 'Material berhasil dihapus' } })
   } catch (error) {
     console.error(error)
