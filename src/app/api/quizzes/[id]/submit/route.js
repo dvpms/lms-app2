@@ -22,12 +22,16 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Read body first — stream can only be consumed once
+    const body = await request.json()
+    const { answers } = body
+
+    const { id: quizId } = await params
     const userId = session.user.id
-    const quizId = params.id
 
     const existing = await prisma.submission.findFirst({ where: { userId, quizId } })
     if (existing) {
-      return NextResponse.json({ data: { submission: existing, duplicate: true } })
+      return NextResponse.json({ data: { submission: { ...existing, duplicate: true } } })
     }
 
     const quiz = await prisma.quiz.findUnique({
@@ -38,7 +42,6 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Quiz tidak ditemukan' }, { status: 404 })
     }
 
-    const { answers } = await request.json()
     const score = calculateScore(quiz.questions, answers)
 
     const submission = await prisma.submission.create({
@@ -51,7 +54,7 @@ export async function POST(request, { params }) {
       data: { submission, score, points: pointResult.points, level: pointResult.level },
     })
   } catch (error) {
-    console.error(error)
+    console.error('[submit] ERROR:', error)
     return NextResponse.json({ error: 'Gagal submit quiz' }, { status: 500 })
   }
 }

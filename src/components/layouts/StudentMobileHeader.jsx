@@ -1,17 +1,44 @@
 'use client'
 
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { useSession } from 'next-auth/react'
-import { useSelector } from 'react-redux'
-import { Bell } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useSession, signOut } from 'next-auth/react'
+import { useSelector, useDispatch } from 'react-redux'
+import { Bell, User, LogOut } from 'lucide-react'
+import { clearUser } from '@/lib/redux/slices/authSlice'
 
 export default function StudentMobileHeader({ initial, homeHref = '/student/dashboard' }) {
   const { data: session } = useSession()
   const user = useSelector((state) => state.auth.user)
-  const displayUser = user ?? session?.user
+  const dispatch = useDispatch()
+  const router = useRouter()
 
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef(null)
+
+  const displayUser = user ?? session?.user
   const derivedInitial = (displayUser?.name ?? 'S').toString().trim().charAt(0).toUpperCase()
   const safeInitial = (initial ?? derivedInitial ?? 'S').toString().trim().charAt(0).toUpperCase() || 'S'
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false)
+      }
+    }
+    if (menuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [menuOpen])
+
+  async function handleLogout() {
+    setMenuOpen(false)
+    dispatch(clearUser())
+    await signOut({ callbackUrl: '/login' })
+  }
 
   return (
     <header className="md:hidden fixed inset-x-0 top-0 z-50 bg-primary text-on-primary rounded-b-3xl shadow-md">
@@ -33,13 +60,53 @@ export default function StudentMobileHeader({ initial, homeHref = '/student/dash
             <Bell className="size-5" aria-hidden="true" />
           </button>
 
-          <button
-            type="button"
-            className="h-11 w-11 inline-flex items-center justify-center rounded-full bg-on-primary/10 hover:bg-on-primary/20 font-bold"
-            aria-label="Profil"
-          >
-            {safeInitial}
-          </button>
+          {/* Profile button + dropdown */}
+          <div className="relative" ref={menuRef}>
+            <button
+              type="button"
+              onClick={() => setMenuOpen((prev) => !prev)}
+              className="h-11 w-11 inline-flex items-center justify-center rounded-full bg-on-primary/10 hover:bg-on-primary/20 font-bold"
+              aria-label="Profil"
+              aria-expanded={menuOpen}
+            >
+              {safeInitial}
+            </button>
+
+            {menuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-52 bg-surface-container-lowest rounded-2xl shadow-[0_8px_24px_rgba(0,93,167,0.16)] border border-outline-variant overflow-hidden z-50">
+                {/* User info */}
+                <div className="px-4 py-3 border-b border-outline-variant">
+                  <p className="font-semibold text-on-surface text-sm truncate">
+                    {displayUser?.name ?? 'Student'}
+                  </p>
+                  <p className="text-xs text-on-surface-variant truncate">
+                    {displayUser?.email ?? ''}
+                  </p>
+                </div>
+
+                {/* Menu items */}
+                <div className="py-1">
+                  <Link
+                    href="/student/profile"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors"
+                  >
+                    <User className="size-4 text-on-surface-variant" />
+                    Profil Saya
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-error hover:bg-error-container/30 transition-colors"
+                  >
+                    <LogOut className="size-4" />
+                    Keluar
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>

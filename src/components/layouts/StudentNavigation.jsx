@@ -9,7 +9,7 @@ import clsx from 'clsx'
 const navLinks = [
   { href: '/student/dashboard', label: 'Beranda', icon: Home },
   { href: '/student/subjects', label: 'Materi', icon: BookOpen },
-  { href: '/student/quizzes', label: 'Kuis', icon: MessageCircleQuestionMark },
+  { href: '/student/quiz', label: 'Kuis', icon: MessageCircleQuestionMark },
   { href: '/student/games', label: 'Games', icon: Gamepad2 },
   { href: '/student/leaderboard', label: 'Peringkat', icon: Trophy },
 ]

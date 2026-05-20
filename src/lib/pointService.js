@@ -8,8 +8,9 @@ export function calculateLevel(points) {
 
 async function isDuplicateActivity(userId, type, activityId, prismaClient) {
   if (type === 'QUIZ') {
-    const existing = await prismaClient.submission.findFirst({
-      where: { userId, quizId: activityId },
+    // Check ActivityLog instead of Submission — Submission is already created before this is called
+    const existing = await prismaClient.activityLog.findFirst({
+      where: { userId, type: 'QUIZ', activityId },
     })
     return !!existing
   }

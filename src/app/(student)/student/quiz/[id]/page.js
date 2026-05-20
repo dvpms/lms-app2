@@ -35,13 +35,16 @@ export default function QuizPage() {
     const res = await submitQuiz({ id, answers })
     if (res.data) {
       const { score, points, level, submission } = res.data.data
-      if (session?.user) {
+      if (session?.user && points !== undefined) {
         dispatch(setUser({ ...session.user, points, level }))
       }
-      const correctCount = questions.filter(
-        (q) => q.options.find((o) => o.isCorrect)?.id === answers[q.id],
-      ).length
-      setResult({ score, points, level, correctCount, duplicate: submission?.duplicate })
+      const isDuplicate = submission?.duplicate ?? false
+      const correctCount = isDuplicate
+        ? null
+        : questions.filter(
+            (q) => q.options.find((o) => o.isCorrect)?.id === answers[q.id],
+          ).length
+      setResult({ score, points, level, correctCount, duplicate: isDuplicate })
     }
   }
 
@@ -57,6 +60,21 @@ export default function QuizPage() {
     return <p className="text-error text-center p-6">Quiz tidak ditemukan.</p>
   }
 
+  // Show previous result immediately if student already completed this quiz
+  if (quiz.existingSubmission && !result) {
+    return (
+      <div className="max-w-xl mx-auto px-6 py-8">
+        <QuizResult
+          score={quiz.existingSubmission.score}
+          totalQuestions={questions.length}
+          correctCount={null}
+          pointsEarned={0}
+          alreadyCompleted={true}
+        />
+      </div>
+    )
+  }
+
   if (result) {
     return (
       <div className="max-w-xl mx-auto px-6 py-8">
@@ -65,6 +83,7 @@ export default function QuizPage() {
           totalQuestions={questions.length}
           correctCount={result.correctCount}
           pointsEarned={result.duplicate ? 0 : result.score}
+          alreadyCompleted={result.duplicate}
         />
       </div>
     )

@@ -16,6 +16,7 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const body = await request.json()
     if (body.options !== undefined && !validateOptions(body.options)) {
       return NextResponse.json(
@@ -25,7 +26,7 @@ export async function PUT(request, { params }) {
     }
 
     const question = await prisma.question.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         text: body.text,
         image: body.image ?? null,
@@ -53,7 +54,8 @@ export async function DELETE(_request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    await prisma.question.delete({ where: { id: params.id } })
+    const { id } = await params
+    await prisma.question.delete({ where: { id } })
     return NextResponse.json({ data: { message: 'Question berhasil dihapus' } })
   } catch (error) {
     console.error(error)

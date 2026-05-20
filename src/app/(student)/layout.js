@@ -2,10 +2,12 @@
 
 import StudentNavigation from '@/components/layouts/StudentNavigation'
 import StudentMobileHeader from '@/components/layouts/StudentMobileHeader'
+import SessionSync from '@/components/layouts/SessionSync'
 
 export default function StudentLayout({ children }) {
   return (
     <>
+      <SessionSync />
       <StudentMobileHeader />
       <StudentNavigation />
       <main className="pt-24 md:pt-16 pb-20 md:pb-0 min-h-screen bg-background">
