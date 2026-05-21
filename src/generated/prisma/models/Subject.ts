@@ -307,10 +307,6 @@ export type SubjectNullableScalarRelationFilter = {
   isNot?: Prisma.SubjectWhereInput | null
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type SubjectCreateNestedOneWithoutMaterialsInput = {
   create?: Prisma.XOR<Prisma.SubjectCreateWithoutMaterialsInput, Prisma.SubjectUncheckedCreateWithoutMaterialsInput>
   connectOrCreate?: Prisma.SubjectCreateOrConnectWithoutMaterialsInput

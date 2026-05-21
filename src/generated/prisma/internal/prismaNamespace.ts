@@ -1050,6 +1050,7 @@ export const UserScalarFieldEnum = {
   role: 'role',
   points: 'points',
   level: 'level',
+  avatar: 'avatar',
   createdAt: 'createdAt'
 } as const
 
