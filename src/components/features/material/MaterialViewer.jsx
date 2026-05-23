@@ -38,20 +38,22 @@ export default function MaterialViewer({ cards }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="relative overflow-hidden rounded-xl bg-surface-container-lowest shadow-[0_4px_12px_rgba(0,93,167,0.08)] min-h-48 p-4 sm:p-6">
-        <AnimatePresence custom={direction} mode="wait">
-          <motion.div
-            key={currentIndex}
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-          >
-            <MaterialSlide item={cards[currentIndex]} />
-          </motion.div>
-        </AnimatePresence>
+      <div className="relative overflow-hidden rounded-xl bg-surface-container-lowest shadow-[0_4px_12px_rgba(0,93,167,0.08)]">
+        <div className="overflow-y-auto max-h-[60vh] p-4 sm:p-6">
+          <AnimatePresence custom={direction} mode="wait">
+            <motion.div
+              key={currentIndex}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+            >
+              <MaterialSlide item={cards[currentIndex]} />
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
 
       <div className="flex items-center justify-center gap-2">

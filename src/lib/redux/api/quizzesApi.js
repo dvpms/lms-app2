@@ -26,7 +26,11 @@ export const quizzesApi = createApi({
       invalidatesTags: ['Quiz'],
     }),
     submitQuiz: builder.mutation({
-      query: ({ id, ...body }) => ({ url: `/quizzes/${id}/submit`, method: 'POST', body }),
+      query: ({ id, answers, questionIds }) => ({
+        url: `/quizzes/${id}/submit`,
+        method: 'POST',
+        body: { answers, questionIds },
+      }),
     }),
   }),
 })

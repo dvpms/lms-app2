@@ -62,6 +62,7 @@ export default function RegisterPage() {
           name: form.name,
           email: form.email,
           password: form.password,
+          role: roleChoice === 'teacher' ? 'TEACHER' : 'STUDENT',
         }),
       });
 
@@ -166,6 +167,7 @@ export default function RegisterPage() {
                   className="block w-full min-h-12 appearance-none rounded-2xl bg-surface-container-low py-3 pl-10 pr-10 text-on-surface outline-none ring-1 ring-outline-variant transition-all focus:ring-2 focus:ring-primary"
                 >
                   <option value="student">Murid</option>
+                  <option value="teacher">Guru</option>
                 </select>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-on-surface-variant transition-colors group-focus-within:text-primary">
                   <ChevronDown className="h-5 w-5" aria-hidden="true" />

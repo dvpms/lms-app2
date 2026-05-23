@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Pencil, Star, Trophy, BookOpen } from 'lucide-react'
+import { Pencil, Star, Trophy, BookOpen, X } from 'lucide-react'
 import ProgressBar from '@/components/ui/ProgressBar'
 import Spinner from '@/components/ui/Spinner'
+import ImageUpload from '@/components/features/admin/ImageUpload'
 
 const LEVEL_LABELS = ['', 'Pemula', 'Pelajar', 'Mahir', 'Ahli', 'Master']
 const LEVEL_MIN_POINTS = [0, 0, 100, 300, 600, 1000]
@@ -34,6 +35,9 @@ function InfoField({ label, value, muted = false }) {
 export default function ProfilePage() {
   const [userData, setUserData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [editOpen, setEditOpen] = useState(false)
+  const [pendingAvatar, setPendingAvatar] = useState(null)
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     async function fetchMe() {
@@ -43,13 +47,35 @@ export default function ProfilePage() {
         const json = await res.json()
         setUserData(json.data)
       } catch {
-        // silently fail — show empty state
+        // silently fail
       } finally {
         setIsLoading(false)
       }
     }
     fetchMe()
   }, [])
+
+  async function handleSaveAvatar() {
+    if (!pendingAvatar) return
+    setIsSaving(true)
+    try {
+      const res = await fetch('/api/me', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ avatar: pendingAvatar }),
+      })
+      if (res.ok) {
+        const json = await res.json()
+        setUserData(json.data)
+        setEditOpen(false)
+        setPendingAvatar(null)
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -58,10 +84,12 @@ export default function ProfilePage() {
       </div>
     )
   }
+
   const name = userData?.name ?? 'Student'
   const email = userData?.email ?? ''
   const points = userData?.points ?? 0
   const level = userData?.level ?? 1
+  const avatar = userData?.avatar ?? null
   const initial = name.trim().charAt(0).toUpperCase()
   const progress = getLevelProgress(points, level)
   const levelLabel = LEVEL_LABELS[level] ?? `Level ${level}`
@@ -76,7 +104,11 @@ export default function ProfilePage() {
           <div className="flex flex-col items-center md:items-start gap-3 w-full md:w-auto">
             {/* Avatar */}
             <div className="relative size-28 rounded-full overflow-hidden border-4 border-surface-container-lowest shadow-[0_6px_16px_rgba(0,93,167,0.14)] bg-primary-fixed flex items-center justify-center">
-              <span className="text-5xl font-extrabold text-primary">{initial}</span>
+              {avatar ? (
+                <img src={avatar} alt={name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-5xl font-extrabold text-primary">{initial}</span>
+              )}
             </div>
             <div className="text-center md:text-left">
               <h2 className="text-2xl font-bold text-on-surface">{name}</h2>
@@ -84,13 +116,13 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Edit button — placeholder, no edit form yet */}
           <button
             type="button"
-            className="flex items-center gap-2 px-5 py-3 rounded-xl bg-secondary-container text-on-secondary-container font-semibold text-sm shadow-[0_4px_12px_rgba(0,93,167,0.08)] opacity-50 w-full md:w-auto justify-center md:absolute md:top-0 md:right-0"
+            onClick={() => setEditOpen(true)}
+            className="flex items-center gap-2 px-5 py-3 rounded-xl bg-secondary-container text-on-secondary-container font-semibold text-sm shadow-[0_4px_12px_rgba(0,93,167,0.08)] hover:opacity-90 transition-opacity w-full md:w-auto justify-center md:absolute md:top-0 md:right-0"
           >
             <Pencil size={16} />
-            Edit Profil
+            Edit Foto
           </button>
         </div>
 
@@ -109,7 +141,6 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Level progress */}
           <div className="flex flex-col gap-2">
             <div className="flex justify-between text-xs font-medium text-on-surface-variant">
               <span>Progress Level {level}</span>
@@ -128,7 +159,6 @@ export default function ProfilePage() {
           <h3 className="text-lg font-bold text-on-surface border-b border-outline-variant/30 pb-3">
             Detail Informasi
           </h3>
-
           <InfoField label="Nama Lengkap" value={name} />
           <InfoField label="Email" value={email} muted />
           <InfoField label="Level" value={`${levelLabel} (Level ${level})`} />
@@ -146,6 +176,59 @@ export default function ProfilePage() {
         </div>
 
       </div>
+
+      {/* Edit Avatar Modal */}
+      {editOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
+          <div className="bg-surface-container-lowest rounded-2xl shadow-[0_8px_24px_rgba(0,93,167,0.16)] border border-outline-variant w-full max-w-sm p-6 flex flex-col gap-5">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-on-surface">Ganti Foto Profil</h3>
+              <button
+                type="button"
+                onClick={() => { setEditOpen(false); setPendingAvatar(null) }}
+                className="size-9 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors"
+              >
+                <X size={18} className="text-on-surface-variant" />
+              </button>
+            </div>
+
+            {/* Preview current avatar */}
+            <div className="flex justify-center">
+              <div className="size-24 rounded-full overflow-hidden border-4 border-primary-fixed bg-primary-fixed flex items-center justify-center">
+                {(pendingAvatar ?? avatar) ? (
+                  <img src={pendingAvatar ?? avatar} alt="Preview" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-3xl font-extrabold text-primary">{initial}</span>
+                )}
+              </div>
+            </div>
+
+            <ImageUpload
+              onUpload={(url) => setPendingAvatar(url)}
+              currentUrl={avatar}
+              folder="ceriaedu/avatars"
+            />
+
+            <div className="flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => { setEditOpen(false); setPendingAvatar(null) }}
+                className="px-4 py-2.5 rounded-xl text-sm font-semibold text-on-surface-variant hover:bg-surface-container transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveAvatar}
+                disabled={!pendingAvatar || isSaving}
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-secondary-container text-on-secondary-container disabled:opacity-50 hover:opacity-90 transition-opacity"
+              >
+                {isSaving ? 'Menyimpan...' : 'Simpan'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -16,10 +16,12 @@ export default function QuizForm({ initial, onSubmit, onCancel, isLoading }) {
     title: initial?.title ?? '',
     subjectId: initial?.subjectId ?? '',
     materialId: initial?.materialId ?? '',
+    questionCount: initial?.questionCount ?? 10,
   })
 
   function handleChange(e) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    const { name, value } = e.target
+    setForm((prev) => ({ ...prev, [name]: name === 'questionCount' ? Number(value) : value }))
   }
 
   function handleSubmit(e) {
@@ -28,12 +30,23 @@ export default function QuizForm({ initial, onSubmit, onCancel, isLoading }) {
       title: form.title,
       subjectId: form.subjectId || null,
       materialId: form.materialId || null,
+      questionCount: form.questionCount,
     })
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <Input label="Judul Quiz" name="title" value={form.title} onChange={handleChange} required />
+
+      <Input
+        label="Jumlah Soal per Sesi"
+        name="questionCount"
+        type="number"
+        min={1}
+        max={100}
+        value={form.questionCount}
+        onChange={handleChange}
+      />
 
       <div className="flex flex-col gap-1">
         <label className="text-sm font-semibold text-on-surface-variant">Subject (opsional)</label>

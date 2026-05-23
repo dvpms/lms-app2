@@ -11,41 +11,50 @@ import QuizResult from '@/components/features/quiz/QuizResult'
 import Button from '@/components/ui/Button'
 import Spinner from '@/components/ui/Spinner'
 import Card from '@/components/ui/Card'
+import { RotateCcw } from 'lucide-react'
 
 export default function QuizPage() {
   const { id } = useParams()
   const { data: session } = useSession()
   const dispatch = useDispatch()
 
-  const { data, isLoading } = useGetQuizQuery(id)
+  const { data, isLoading, refetch } = useGetQuizQuery(id)
   const [submitQuiz, { isLoading: isSubmitting }] = useSubmitQuizMutation()
 
   const [answers, setAnswers] = useState({})
   const [result, setResult] = useState(null)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [isRetaking, setIsRetaking] = useState(false)
 
   const quiz = data?.data
   const questions = quiz?.questions ?? []
+  const totalInBank = quiz?.totalQuestions ?? questions.length
 
   function handleSelectOption(questionId, optionId) {
     setAnswers((prev) => ({ ...prev, [questionId]: optionId }))
   }
 
   async function handleSubmit() {
-    const res = await submitQuiz({ id, answers })
+    const questionIds = questions.map((q) => q.id)
+    const res = await submitQuiz({ id, answers, questionIds })
     if (res.data) {
-      const { score, points, level, submission } = res.data.data
+      const { score, points, level } = res.data.data
       if (session?.user && points !== undefined) {
         dispatch(setUser({ ...session.user, points, level }))
       }
-      const isDuplicate = submission?.duplicate ?? false
-      const correctCount = isDuplicate
-        ? null
-        : questions.filter(
-            (q) => q.options.find((o) => o.isCorrect)?.id === answers[q.id],
-          ).length
-      setResult({ score, points, level, correctCount, duplicate: isDuplicate })
+      const correctCount = questions.filter(
+        (q) => q.options.find((o) => o.isCorrect)?.id === answers[q.id],
+      ).length
+      setResult({ score, points, level, correctCount })
     }
+  }
+
+  function handleRetake() {
+    setAnswers({})
+    setResult(null)
+    setCurrentIndex(0)
+    setIsRetaking(true)
+    refetch()
   }
 
   if (isLoading) {
@@ -60,31 +69,47 @@ export default function QuizPage() {
     return <p className="text-error text-center p-6">Quiz tidak ditemukan.</p>
   }
 
-  // Show previous result immediately if student already completed this quiz
-  if (quiz.existingSubmission && !result) {
+  // Show latest submission result if student has done this quiz before (and not retaking)
+  if (quiz.latestSubmission && !result && !isRetaking) {
     return (
-      <div className="max-w-xl mx-auto px-6 py-8">
+      <div className="max-w-xl mx-auto px-6 py-8 flex flex-col gap-4">
         <QuizResult
-          score={quiz.existingSubmission.score}
+          score={quiz.latestSubmission.score}
           totalQuestions={questions.length}
           correctCount={null}
-          pointsEarned={0}
-          alreadyCompleted={true}
+          pointsEarned={quiz.latestSubmission.score}
+          alreadyCompleted={false}
         />
+        <Button
+          onClick={handleRetake}
+          variant="ghost"
+          className="flex items-center gap-2 mx-auto"
+        >
+          <RotateCcw size={16} />
+          Coba Lagi dengan Soal Baru
+        </Button>
       </div>
     )
   }
 
   if (result) {
     return (
-      <div className="max-w-xl mx-auto px-6 py-8">
+      <div className="max-w-xl mx-auto px-6 py-8 flex flex-col gap-4">
         <QuizResult
           score={result.score}
           totalQuestions={questions.length}
           correctCount={result.correctCount}
-          pointsEarned={result.duplicate ? 0 : result.score}
-          alreadyCompleted={result.duplicate}
+          pointsEarned={result.score}
+          alreadyCompleted={false}
         />
+        <Button
+          onClick={handleRetake}
+          variant="ghost"
+          className="flex items-center gap-2 mx-auto"
+        >
+          <RotateCcw size={16} />
+          Coba Lagi dengan Soal Baru
+        </Button>
       </div>
     )
   }
@@ -98,6 +123,11 @@ export default function QuizPage() {
         <h1 className="text-2xl font-bold text-on-surface">{quiz.title}</h1>
         <p className="text-sm text-on-surface-variant mt-1">
           {answeredCount} / {questions.length} soal dijawab
+          {totalInBank > questions.length && (
+            <span className="ml-2 text-xs text-on-surface-variant/60">
+              (dari {totalInBank} soal di bank)
+            </span>
+          )}
         </p>
       </div>
 

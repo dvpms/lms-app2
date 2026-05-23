@@ -50,6 +50,7 @@ export default function LoginPage() {
     }
 
     if (role === 'ADMIN') router.push('/admin/dashboard')
+    else if (role === 'TEACHER') router.push('/student/subjects')
     else router.push('/student/dashboard')
   }
 

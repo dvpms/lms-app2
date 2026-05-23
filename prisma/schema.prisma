@@ -16,6 +16,7 @@ model User {
   role         Role          @default(STUDENT)
   points       Int           @default(0)
   level        Int           @default(1)
+  avatar       String?
   createdAt    DateTime      @default(now())
   submissions  Submission[]
   activityLogs ActivityLog[]
@@ -41,15 +42,16 @@ model Material {
 }
 
 model Quiz {
-  id          String       @id @default(cuid())
-  materialId  String?
-  subjectId   String?
-  title       String
-  type        QuizType     @default(MULTIPLE_CHOICE)
-  material    Material?    @relation(fields: [materialId], references: [id])
-  subject     Subject?     @relation(fields: [subjectId], references: [id])
-  questions   Question[]
-  submissions Submission[]
+  id            String       @id @default(cuid())
+  materialId    String?
+  subjectId     String?
+  title         String
+  type          QuizType     @default(MULTIPLE_CHOICE)
+  questionCount Int          @default(10)
+  material      Material?    @relation(fields: [materialId], references: [id])
+  subject       Subject?     @relation(fields: [subjectId], references: [id])
+  questions     Question[]
+  submissions   Submission[]
 }
 
 model Question {
@@ -93,6 +95,7 @@ model ActivityLog {
 enum Role {
   STUDENT
   ADMIN
+  TEACHER
 }
 
 enum QuizType {

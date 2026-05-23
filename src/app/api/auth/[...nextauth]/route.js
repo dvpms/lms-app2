@@ -43,6 +43,7 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        // On login: store user data in token
         token.id = user.id;
         token.role = user.role;
         token.name = user.name;
@@ -55,6 +56,24 @@ export const authOptions = {
       session.user.role = token.role;
       session.user.name = token.name;
       session.user.email = token.email;
+
+      // Always fetch fresh name from DB to prevent stale JWT data
+      if (token.id) {
+        try {
+          const freshUser = await prisma.user.findUnique({
+            where: { id: token.id },
+            select: { name: true, email: true, role: true },
+          });
+          if (freshUser) {
+            session.user.name = freshUser.name;
+            session.user.email = freshUser.email;
+            session.user.role = freshUser.role;
+          }
+        } catch {
+          // Non-critical — fall back to token data
+        }
+      }
+
       return session;
     },
   },

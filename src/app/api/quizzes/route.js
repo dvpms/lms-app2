@@ -50,6 +50,7 @@ export async function POST(request) {
         title: body.title,
         materialId: body.materialId ?? null,
         subjectId: body.subjectId ?? null,
+        questionCount: body.questionCount ?? 10,
       },
     })
     return NextResponse.json({ data: quiz }, { status: 201 })

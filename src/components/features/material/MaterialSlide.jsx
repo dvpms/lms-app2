@@ -22,7 +22,7 @@ const slideRenderers = {
     <img
       src={value}
       alt="Ilustrasi materi"
-      className="w-full rounded-xl object-cover max-h-64"
+      className="w-full rounded-xl object-contain"
     />
   ),
 }

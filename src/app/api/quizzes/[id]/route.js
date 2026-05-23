@@ -16,15 +16,34 @@ export async function GET(_request, { params }) {
       return NextResponse.json({ error: 'Quiz tidak ditemukan' }, { status: 404 })
     }
 
-    // Include existing submission for the current user (if logged in as student)
-    let existingSubmission = null
+    // Shuffle all questions then pick questionCount of them
+    const questionCount = quiz.questionCount ?? 10
+    const shuffled = [...quiz.questions].sort(() => Math.random() - 0.5)
+    const selectedQuestions = shuffled.slice(0, Math.min(questionCount, shuffled.length))
+
+    // Also shuffle options within each question
+    const questionsWithShuffledOptions = selectedQuestions.map((q) => ({
+      ...q,
+      options: [...q.options].sort(() => Math.random() - 0.5),
+    }))
+
+    // Get the latest submission for this user (not just first — allow retakes)
+    let latestSubmission = null
     if (session?.user?.id) {
-      existingSubmission = await prisma.submission.findFirst({
+      latestSubmission = await prisma.submission.findFirst({
         where: { userId: session.user.id, quizId: id },
+        orderBy: { completedAt: 'desc' },
       })
     }
 
-    return NextResponse.json({ data: { ...quiz, existingSubmission } })
+    return NextResponse.json({
+      data: {
+        ...quiz,
+        questions: questionsWithShuffledOptions,
+        totalQuestions: quiz.questions.length,
+        latestSubmission,
+      },
+    })
   } catch (error) {
     console.error(error)
     return NextResponse.json({ error: 'Gagal mengambil quiz' }, { status: 500 })
@@ -50,6 +69,7 @@ export async function PUT(request, { params }) {
         title: body.title,
         materialId: body.materialId ?? null,
         subjectId: body.subjectId ?? null,
+        questionCount: body.questionCount ?? 10,
       },
     })
     return NextResponse.json({ data: quiz })

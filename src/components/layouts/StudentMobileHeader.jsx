@@ -2,24 +2,35 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useSession, signOut } from 'next-auth/react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { signOut } from 'next-auth/react'
 import { Bell, User, LogOut } from 'lucide-react'
 import { clearUser } from '@/lib/redux/slices/authSlice'
 
-export default function StudentMobileHeader({ initial, homeHref = '/student/dashboard' }) {
-  const { data: session } = useSession()
-  const user = useSelector((state) => state.auth.user)
+export default function StudentMobileHeader({ homeHref = '/student/dashboard' }) {
   const dispatch = useDispatch()
-  const router = useRouter()
 
+  const [userData, setUserData] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
 
-  const displayUser = user ?? session?.user
-  const derivedInitial = (displayUser?.name ?? 'S').toString().trim().charAt(0).toUpperCase()
-  const safeInitial = (initial ?? derivedInitial ?? 'S').toString().trim().charAt(0).toUpperCase() || 'S'
+  useEffect(() => {
+    async function fetchMe() {
+      try {
+        const res = await fetch('/api/me')
+        if (!res.ok) return
+        const json = await res.json()
+        setUserData(json.data)
+      } catch {
+        // silently fail
+      }
+    }
+    fetchMe()
+  }, [])
+
+  const name = userData?.name ?? ''
+  const email = userData?.email ?? ''
+  const safeInitial = name.trim().charAt(0).toUpperCase() || 'S'
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -77,11 +88,9 @@ export default function StudentMobileHeader({ initial, homeHref = '/student/dash
                 {/* User info */}
                 <div className="px-4 py-3 border-b border-outline-variant">
                   <p className="font-semibold text-on-surface text-sm truncate">
-                    {displayUser?.name ?? 'Student'}
+                    {name || 'Student'}
                   </p>
-                  <p className="text-xs text-on-surface-variant truncate">
-                    {displayUser?.email ?? ''}
-                  </p>
+                  <p className="text-xs text-on-surface-variant truncate">{email}</p>
                 </div>
 
                 {/* Menu items */}
