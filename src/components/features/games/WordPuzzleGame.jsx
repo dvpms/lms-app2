@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { gameSuccessVariants } from '@/lib/animations'
 import { usePostActivityMutation } from '@/lib/redux/api/activityApi'
@@ -21,6 +21,24 @@ export default function WordPuzzleGame({ level, onComplete }) {
   const [foundWords, setFoundWords] = useState([])
   const [completed, setCompleted] = useState(false)
   const [postActivity] = usePostActivityMutation()
+  const awardingRef = useRef(false)
+  const completedRef = useRef(false)
+  completedRef.current = completed
+
+  async function awardPointsOnce() {
+    if (completedRef.current || awardingRef.current) return
+    awardingRef.current = true
+    try {
+      await postActivity({ type: 'GAME', activityId: level.id, points: level.points }).unwrap()
+      completedRef.current = true
+      setCompleted(true)
+      onComplete?.()
+    } catch {
+      // If awarding fails, keep the level incomplete so the user can retry.
+    } finally {
+      awardingRef.current = false
+    }
+  }
 
   function isCellSelected(row, col) {
     return selected.some(([r, c]) => r === row && c === col)
@@ -53,9 +71,7 @@ export default function WordPuzzleGame({ level, onComplete }) {
       setSelected([])
 
       if (updated.length === level.hiddenWords.length && !completed) {
-        setCompleted(true)
-        postActivity({ type: 'GAME', activityId: level.id, points: level.points })
-        onComplete?.()
+        void awardPointsOnce()
       }
     }
   }
