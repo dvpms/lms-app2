@@ -32,6 +32,7 @@ export async function POST(request) {
         quizId: body.quizId,
         text: body.text,
         image: body.image ?? null,
+        solutionImage: body.solutionImage ?? null,
         points: body.points ?? 10,
         options: { create: body.options.map((o) => ({ text: o.text, isCorrect: o.isCorrect })) },
       },

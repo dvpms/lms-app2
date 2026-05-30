@@ -19,6 +19,7 @@ export default function QuestionForm({ quizId, initial, onSubmit, onCancel, isLo
   const [form, setForm] = useState({
     text: initial?.text ?? '',
     image: initial?.image ?? '',
+    solutionImage: initial?.solutionImage ?? '',
     points: initial?.points ?? 10,
     options: buildInitialOptions(initial?.options),
   })
@@ -59,6 +60,10 @@ export default function QuestionForm({ quizId, initial, onSubmit, onCancel, isLo
     setForm((prev) => ({ ...prev, image: url }))
   }
 
+  function handleSolutionImageUpload(url) {
+    setForm((prev) => ({ ...prev, solutionImage: url }))
+  }
+
   function validate() {
     if (!form.text.trim()) return 'Teks soal wajib diisi'
     if (form.options.some((o) => !o.text.trim())) return 'Semua pilihan jawaban wajib diisi'
@@ -79,6 +84,7 @@ export default function QuestionForm({ quizId, initial, onSubmit, onCancel, isLo
       quizId,
       text: form.text.trim(),
       image: form.image || null,
+      solutionImage: form.solutionImage || null,
       points: form.points,
       options: form.options,
     })
@@ -102,6 +108,20 @@ export default function QuestionForm({ quizId, initial, onSubmit, onCancel, isLo
           onUpload={handleImageUpload}
           currentUrl={form.image || null}
           folder="ceriaedu/questions"
+        />
+      </div>
+
+      <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-4 flex flex-col gap-3">
+        <div>
+          <p className="text-sm font-semibold text-on-surface-variant">Cara Penyelesaian</p>
+          <p className="text-xs text-on-surface-variant/70 mt-1">
+            Upload gambar pembahasan yang akan tampil saat siswa menjawab salah.
+          </p>
+        </div>
+        <ImageUpload
+          onUpload={handleSolutionImageUpload}
+          currentUrl={form.solutionImage || null}
+          folder="ceriaedu/question-solutions"
         />
       </div>
 

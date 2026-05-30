@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useGetQuizQuery, useSubmitQuizMutation } from '@/lib/redux/api/quizzesApi'
@@ -22,16 +22,30 @@ export default function QuizPage() {
   const [submitQuiz, { isLoading: isSubmitting }] = useSubmitQuizMutation()
 
   const [answers, setAnswers] = useState({})
+  const [answerFeedback, setAnswerFeedback] = useState({})
   const [result, setResult] = useState(null)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isRetaking, setIsRetaking] = useState(false)
+  const answeredRef = useRef({})
 
   const quiz = data?.data
   const questions = quiz?.questions ?? []
   const totalInBank = quiz?.totalQuestions ?? questions.length
 
   function handleSelectOption(questionId, optionId) {
+    const question = questions.find((q) => q.id === questionId)
+    if (!question || answeredRef.current[questionId] || answerFeedback[questionId]) return
+
+    const correctOptionId = question.options.find((o) => o.isCorrect)?.id ?? null
+    const isCorrect = optionId === correctOptionId
+
+    answeredRef.current[questionId] = true
+
     setAnswers((prev) => ({ ...prev, [questionId]: optionId }))
+    setAnswerFeedback((prev) => ({
+      ...prev,
+      [questionId]: { status: isCorrect ? 'correct' : 'wrong', correctOptionId },
+    }))
   }
 
   async function handleSubmit() {
@@ -51,6 +65,8 @@ export default function QuizPage() {
 
   function handleRetake() {
     setAnswers({})
+    setAnswerFeedback({})
+    answeredRef.current = {}
     setResult(null)
     setCurrentIndex(0)
     setIsRetaking(true)
@@ -138,6 +154,7 @@ export default function QuizPage() {
             selectedOptionId={answers[questions[currentIndex].id]}
             onSelect={(optionId) => handleSelectOption(questions[currentIndex].id, optionId)}
             index={currentIndex}
+            feedbackState={answerFeedback[questions[currentIndex].id]}
           />
         </Card>
       )}

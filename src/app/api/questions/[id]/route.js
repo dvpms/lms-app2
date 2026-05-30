@@ -30,6 +30,7 @@ export async function PUT(request, { params }) {
       data: {
         text: body.text,
         image: body.image ?? null,
+        solutionImage: body.solutionImage ?? null,
         points: body.points,
         ...(body.options && {
           options: {
