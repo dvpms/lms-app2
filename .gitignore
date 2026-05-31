@@ -29,7 +29,7 @@ yarn-error.log*
 .vercel
 .vscode
 
-src\generated
+src/generated
 
 # kiro — keep specs and steering in git, ignore local settings only
 .kiro/

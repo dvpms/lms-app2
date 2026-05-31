@@ -7,8 +7,8 @@ import Spinner from '@/components/ui/Spinner'
 import ImageUpload from '@/components/features/admin/ImageUpload'
 
 const LEVEL_LABELS = ['', 'Pemula', 'Pelajar', 'Mahir', 'Ahli', 'Master']
-const LEVEL_MIN_POINTS = [0, 0, 100, 300, 600, 1000]
-const LEVEL_MAX_POINTS = [0, 100, 300, 600, 1000, Infinity]
+const LEVEL_MIN_POINTS = [0, 0, 1000, 2000, 3000, 4000]
+const LEVEL_MAX_POINTS = [0, 1000, 2000, 3000, 4000, Infinity]
 
 function getLevelProgress(points, level) {
   const min = LEVEL_MIN_POINTS[level] ?? 0

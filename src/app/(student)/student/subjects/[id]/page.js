@@ -45,7 +45,7 @@ export default function SubjectDetailPage() {
             {subject?.title}
           </h1>
           {subjectDescription && (
-            <p className="mt-2 text-sm text-on-surface-variant leading-relaxed font-medium line-clamp-2">
+            <p className="mt-2 text-sm text-on-surface-variant leading-relaxed font-medium">
               {subjectDescription}
             </p>
           )}
@@ -66,7 +66,7 @@ export default function SubjectDetailPage() {
                     </h2>
                   </div>
 
-                  <p className="text-sm text-on-surface-variant leading-relaxed font-medium mb-4 line-clamp-2">
+                  <p className="text-sm text-on-surface-variant leading-relaxed font-medium mb-4">
                     {description}
                   </p>
 

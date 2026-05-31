@@ -117,16 +117,15 @@ export default function WordArrangementGame({ level, onComplete }) {
 
     if (!over || active.id === over.id) return
 
-    let reorderedWords = null
-    setWords((prev) => {
-      const oldIndex = prev.indexOf(active.id)
-      const newIndex = prev.indexOf(over.id)
-      const reordered = arrayMove(prev, oldIndex, newIndex)
-      reorderedWords = reordered
-      return reordered
-    })
+    // Use the current `words` state to compute reordered array synchronously
+    const oldIndex = words.indexOf(active.id)
+    const newIndex = words.indexOf(over.id)
+    if (oldIndex === -1 || newIndex === -1) return
 
-    if (reorderedWords && isCorrectOrder(reorderedWords, level.correctOrder)) {
+    const reordered = arrayMove(words, oldIndex, newIndex)
+    setWords(reordered)
+
+    if (isCorrectOrder(reordered, level.correctOrder)) {
       void awardPointsOnce()
     }
   }
