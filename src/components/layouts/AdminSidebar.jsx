@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, BookOpen, HelpCircle, Users } from 'lucide-react'
+import { LayoutDashboard, BookOpen, HelpCircle, Users, MessageCircle } from 'lucide-react'
 import clsx from 'clsx'
 
 const navLinks = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/subjects', label: 'Mata Pelajaran & Materi', icon: BookOpen },
   { href: '/admin/quizzes', label: 'Quizzes', icon: HelpCircle },
+  { href: '/admin/testimonials', label: 'Testimonial', icon: MessageCircle },
   { href: '/admin/students', label: 'Students', icon: Users },
 ]
 
