@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "postinstall": "prisma migrate deploy && prisma generate",
     "test": "vitest run",
     "test:watch": "vitest",
     "seed": "node --env-file=.env --import tsx/esm prisma/seed.js",
