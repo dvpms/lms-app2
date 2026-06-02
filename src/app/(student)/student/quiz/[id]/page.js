@@ -139,11 +139,6 @@ export default function QuizPage() {
         <h1 className="text-2xl font-bold text-on-surface">{quiz.title}</h1>
         <p className="text-sm text-on-surface-variant mt-1">
           {answeredCount} / {questions.length} soal dijawab
-          {totalInBank > questions.length && (
-            <span className="ml-2 text-xs text-on-surface-variant/60">
-              (dari {totalInBank} soal di bank)
-            </span>
-          )}
         </p>
       </div>
 
