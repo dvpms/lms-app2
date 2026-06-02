@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, BookOpen, HelpCircle, Users, MessageCircle, School } from 'lucide-react'
+import { LayoutDashboard, BookOpen, HelpCircle, Users, MessageCircle, School, Gamepad2 } from 'lucide-react'
 import clsx from 'clsx'
 
 const navLinks = [
@@ -11,6 +11,7 @@ const navLinks = [
   { href: '/admin/quizzes', label: 'Quizzes', icon: HelpCircle },
   { href: '/admin/testimonials', label: 'Testimonial', icon: MessageCircle },
   { href: '/admin/users', label: 'Users', icon: School },
+  { href: '/admin/games', label: 'Games', icon: Gamepad2 },
 ]
 
 export default function AdminSidebar() {

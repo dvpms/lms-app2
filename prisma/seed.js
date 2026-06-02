@@ -1,6 +1,7 @@
 import { PrismaClient } from '../src/generated/prisma/client.ts'
 import { PrismaNeon } from '@prisma/adapter-neon'
 import bcrypt from 'bcryptjs'
+import { seedGames } from './seed-games.js'
 
 const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL })
 const prisma = new PrismaClient({ adapter })
@@ -115,6 +116,8 @@ async function main() {
       ],
     },
   })
+
+  await seedGames(prisma)
 
   await seedQuiz('quiz-math-1', 'Kuis Perkalian Dasar', mathMaterial1.id, math.id, [
     {

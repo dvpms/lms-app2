@@ -22,6 +22,34 @@ model User {
   testimonials Testimonial[]
 }
 
+model Game {
+  id          String      @id @default(cuid())
+  type        String      @unique
+  title       String
+  description String
+  emoji       String
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  levels      GameLevel[]
+}
+
+model GameLevel {
+  id          String   @id @default(cuid())
+  gameId      String
+  levelKey    String
+  order       Int
+  difficulty  Int
+  points      Int
+  payload     Json
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  game        Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, levelKey])
+}
+
 model Subject {
   id                    String     @id @default(cuid())
   title                 String

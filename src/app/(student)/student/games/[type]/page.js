@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Lock, Star, CheckCircle } from 'lucide-react'
-import { GAME_META } from '@/lib/gameData'
 import WordArrangementGame from '@/components/features/games/WordArrangementGame'
 import WordPuzzleGame from '@/components/features/games/WordPuzzleGame'
 import MultiplicationPuzzleGame from '@/components/features/games/MultiplicationPuzzleGame'
@@ -34,15 +33,38 @@ function DifficultyStars({ difficulty }) {
 export default function GamePage() {
   const { type } = useParams()
   const router = useRouter()
-
-  const meta = GAME_META[type]
   const GameComponent = GAME_COMPONENTS[type]
 
-  const [completedLevelIds, setCompletedLevelIds] = useState(null) // null = loading
+  const [games, setGames] = useState(null)
+  const [completedLevelIds, setCompletedLevelIds] = useState(null)
   const [activeLevel, setActiveLevel] = useState(null)
   const [levelJustCompleted, setLevelJustCompleted] = useState(false)
 
-  // Fetch completed levels from ActivityLog via /api/activity/completed
+  useEffect(() => {
+    async function fetchGames() {
+      try {
+        const res = await fetch('/api/games')
+        const json = await res.json()
+        setGames(json.data ?? [])
+      } catch {
+        setGames([])
+      }
+    }
+
+    fetchGames()
+  }, [])
+
+  const meta = useMemo(() => {
+    const game = games?.find((item) => item.type === type)
+    if (!game) return null
+    return {
+      title: game.title,
+      description: game.description,
+      emoji: game.emoji,
+      levels: (game.levels ?? []).slice().sort((a, b) => a.order - b.order),
+    }
+  }, [games, type])
+
   useEffect(() => {
     if (!meta) return
     async function fetchCompleted() {
@@ -59,19 +81,24 @@ export default function GamePage() {
         setCompletedLevelIds(new Set())
       }
     }
+
     fetchCompleted()
   }, [meta])
 
-  if (!meta || !GameComponent) {
+  if (!GameComponent) {
     return <p className="text-error text-center p-6">Game tidak ditemukan.</p>
   }
 
-  if (completedLevelIds === null) {
+  if (games === null || completedLevelIds === null) {
     return (
       <div className="flex justify-center items-center min-h-64">
         <Spinner />
       </div>
     )
+  }
+
+  if (!meta) {
+    return <p className="text-error text-center p-6">Game belum tersedia.</p>
   }
 
   function isLevelUnlocked(index) {
@@ -81,7 +108,7 @@ export default function GamePage() {
   }
 
   function handleLevelComplete(levelId) {
-    setCompletedLevelIds((prev) => new Set([...prev, levelId]))
+    setCompletedLevelIds((prev) => new Set([...(prev ?? []), levelId]))
     setLevelJustCompleted(true)
   }
 
@@ -96,7 +123,6 @@ export default function GamePage() {
     }
   }
 
-  // Level selection screen
   if (!activeLevel) {
     const allDone = meta.levels.every((l) => completedLevelIds.has(l.id))
 
@@ -188,7 +214,6 @@ export default function GamePage() {
     )
   }
 
-  // Active game screen
   const currentIndex = meta.levels.findIndex((l) => l.id === activeLevel.id)
   const hasNext = currentIndex < meta.levels.length - 1
 
@@ -212,7 +237,12 @@ export default function GamePage() {
         <div className="bg-surface-container-lowest rounded-2xl shadow-[0_4px_12px_rgba(0,93,167,0.08)] border border-outline-variant/30 p-5">
           <GameComponent
             key={activeLevel.id}
-            level={activeLevel}
+            level={{
+              ...activeLevel.payload,
+              id: activeLevel.id,
+              difficulty: activeLevel.difficulty,
+              points: activeLevel.points,
+            }}
             onComplete={() => handleLevelComplete(activeLevel.id)}
           />
         </div>

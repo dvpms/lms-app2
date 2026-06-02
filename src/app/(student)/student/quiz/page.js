@@ -63,7 +63,6 @@ export default function QuizListPage() {
                       <p className="text-xs text-on-surface-variant mt-0.5">{associatedWith}</p>
                     )}
                     <div className="flex items-center gap-2 mt-2 flex-wrap">
-                      <Badge>{questionCount} soal</Badge>
                       {totalPoints > 0 && (
                         <span className="text-xs text-secondary font-semibold">
                           +{totalPoints} poin
