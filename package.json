@@ -11,7 +11,6 @@
     "postinstall": "prisma migrate deploy && prisma generate",
     "test": "vitest run",
     "test:watch": "vitest",
-    "postinstall": "prisma migrate deploy && prisma generate",
     "seed": "node --env-file=.env --import tsx/esm prisma/seed.js",
     "seed:games": "node --env-file=.env --import tsx/esm prisma/seed-games.js",
     "seed:prod": "node --env-file=.env.prod --import tsx/esm prisma/seed.js",
