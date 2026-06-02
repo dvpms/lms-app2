@@ -3,17 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { prisma } from '@/lib/prisma'
 import { calculateLevel } from '@/lib/pointService'
-
-function calculateScore(questions, answers) {
-  return questions.reduce((total, question) => {
-    const selectedOptionId = answers[question.id]
-    const correctOption = question.options.find((o) => o.isCorrect)
-    if (correctOption && correctOption.id === selectedOptionId) {
-      return total + question.points
-    }
-    return total
-  }, 0)
-}
+import { buildQuizReviewDetails, calculateQuizScore } from '@/lib/quizGrading'
 
 export async function POST(request, { params }) {
   try {
@@ -42,7 +32,9 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Quiz tidak ditemukan' }, { status: 404 })
     }
 
-    const score = calculateScore(quiz.questions, answers)
+    const score = calculateQuizScore(quiz.questions, answers)
+    const details = buildQuizReviewDetails(quiz.questions, answers)
+    const correctCount = details.filter((detail) => detail.isCorrect).length
 
     // Always create a new submission — retakes are allowed
     const submission = await prisma.submission.create({
@@ -69,6 +61,9 @@ export async function POST(request, { params }) {
       data: {
         submission,
         score,
+        correctCount,
+        totalQuestions: quiz.questions.length,
+        details,
         points: updatedUser.points,
         level: updatedUser.level,
         firstAttempt: true,

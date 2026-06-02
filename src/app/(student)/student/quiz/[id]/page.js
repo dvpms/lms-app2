@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useGetQuizQuery, useSubmitQuizMutation } from '@/lib/redux/api/quizzesApi'
@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux'
 import { setUser } from '@/lib/redux/slices/authSlice'
 import QuizQuestion from '@/components/features/quiz/QuizQuestion'
 import QuizResult from '@/components/features/quiz/QuizResult'
+import QuizReview from '@/components/features/quiz/QuizReview'
 import Button from '@/components/ui/Button'
 import Spinner from '@/components/ui/Spinner'
 import Card from '@/components/ui/Card'
@@ -22,30 +23,18 @@ export default function QuizPage() {
   const [submitQuiz, { isLoading: isSubmitting }] = useSubmitQuizMutation()
 
   const [answers, setAnswers] = useState({})
-  const [answerFeedback, setAnswerFeedback] = useState({})
-  const [result, setResult] = useState(null)
+  const [submissionResult, setSubmissionResult] = useState(null)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isRetaking, setIsRetaking] = useState(false)
-  const answeredRef = useRef({})
 
   const quiz = data?.data
   const questions = quiz?.questions ?? []
-  const totalInBank = quiz?.totalQuestions ?? questions.length
 
   function handleSelectOption(questionId, optionId) {
     const question = questions.find((q) => q.id === questionId)
-    if (!question || answeredRef.current[questionId] || answerFeedback[questionId]) return
-
-    const correctOptionId = question.options.find((o) => o.isCorrect)?.id ?? null
-    const isCorrect = optionId === correctOptionId
-
-    answeredRef.current[questionId] = true
+    if (!question) return
 
     setAnswers((prev) => ({ ...prev, [questionId]: optionId }))
-    setAnswerFeedback((prev) => ({
-      ...prev,
-      [questionId]: { status: isCorrect ? 'correct' : 'wrong', correctOptionId },
-    }))
   }
 
   async function handleSubmit() {
@@ -56,18 +45,13 @@ export default function QuizPage() {
       if (session?.user && points !== undefined) {
         dispatch(setUser({ ...session.user, points, level }))
       }
-      const correctCount = questions.filter(
-        (q) => q.options.find((o) => o.isCorrect)?.id === answers[q.id],
-      ).length
-      setResult({ score, points, level, correctCount })
+      setSubmissionResult(res.data.data)
     }
   }
 
   function handleRetake() {
     setAnswers({})
-    setAnswerFeedback({})
-    answeredRef.current = {}
-    setResult(null)
+    setSubmissionResult(null)
     setCurrentIndex(0)
     setIsRetaking(true)
     refetch()
@@ -86,7 +70,7 @@ export default function QuizPage() {
   }
 
   // Show latest submission result if student has done this quiz before (and not retaking)
-  if (quiz.latestSubmission && !result && !isRetaking) {
+  if (quiz.latestSubmission && !submissionResult && !isRetaking) {
     return (
       <div className="max-w-xl mx-auto px-6 py-8 flex flex-col gap-4">
         <QuizResult
@@ -94,7 +78,7 @@ export default function QuizPage() {
           totalQuestions={questions.length}
           correctCount={null}
           pointsEarned={quiz.latestSubmission.score}
-          alreadyCompleted={false}
+          alreadyCompleted={true}
         />
         <Button
           onClick={handleRetake}
@@ -108,16 +92,17 @@ export default function QuizPage() {
     )
   }
 
-  if (result) {
+  if (submissionResult) {
     return (
       <div className="max-w-xl mx-auto px-6 py-8 flex flex-col gap-4">
         <QuizResult
-          score={result.score}
-          totalQuestions={questions.length}
-          correctCount={result.correctCount}
-          pointsEarned={result.score}
+          score={submissionResult.score}
+          totalQuestions={submissionResult.totalQuestions ?? questions.length}
+          correctCount={submissionResult.correctCount ?? null}
+          pointsEarned={submissionResult.score}
           alreadyCompleted={false}
         />
+        <QuizReview details={submissionResult.details ?? []} />
         <Button
           onClick={handleRetake}
           variant="ghost"
@@ -149,7 +134,6 @@ export default function QuizPage() {
             selectedOptionId={answers[questions[currentIndex].id]}
             onSelect={(optionId) => handleSelectOption(questions[currentIndex].id, optionId)}
             index={currentIndex}
-            feedbackState={answerFeedback[questions[currentIndex].id]}
           />
         </Card>
       )}
