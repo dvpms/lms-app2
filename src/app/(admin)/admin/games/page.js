@@ -245,17 +245,53 @@ function LevelModalContent({ levelModal, levelForm, setLevelForm, setLevelModal,
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-lg font-semibold text-on-surface">{levelModal.level ? 'Edit Level' : 'Tambah Level'}</h2>
-      {gameType !== 'word-arrangement' && ['levelKey', 'order', 'difficulty', 'points'].map((field) => (
-        <label key={field} className="flex flex-col gap-2">
-          <span className="text-sm font-semibold text-on-surface-variant">{field}</span>
-          <input
-            value={levelForm[field]}
-            type={field === 'levelKey' ? 'text' : 'number'}
-            onChange={(e) => setLevelForm((prev) => ({ ...prev, [field]: e.target.value }))}
-            className="min-h-12 rounded-xl border-2 border-outline-variant bg-surface-container-lowest px-4 py-3 text-on-surface focus:border-primary focus:outline-none"
-          />
-        </label>
-      ))}
+
+      <div className="rounded-xl border bg-surface-container-low p-4">
+        <h3 className="font-semibold text-on-surface">Info Dasar</h3>
+        <div className="mt-4 grid gap-4">
+          <div className="grid grid-cols-2 gap-4">
+            <label className="grid gap-2">
+              <span className="text-sm font-medium text-on-surface-variant">Nama Level</span>
+              <input value={levelForm.levelKey} onChange={(e) => setLevelForm(p => ({...p, levelKey: e.target.value}))} className="rounded-xl border-2 border-outline-variant px-3 py-2 focus:border-primary focus:outline-none" placeholder="Contoh: Level 1" />
+            </label>
+            <label className="grid gap-2">
+              <span className="text-sm font-medium text-on-surface-variant">Urutan Level</span>
+              <input type="number" value={levelForm.order} onChange={(e) => setLevelForm(p => ({...p, order: e.target.value}))} className="rounded-xl border-2 border-outline-variant px-3 py-2 focus:border-primary focus:outline-none" />
+            </label>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <span className="text-sm font-medium text-on-surface-variant">Tingkat Kesulitan</span>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: 'Mudah', value: 1 },
+                  { label: 'Sedang', value: 2 },
+                  { label: 'Sulit', value: 3 },
+                ].map((item) => (
+                  <button
+                    key={item.value}
+                    type="button"
+                    onClick={() => setLevelForm(p => ({...p, difficulty: item.value}))}
+                    className={`rounded-full border-2 px-4 py-2 text-sm font-medium transition-colors ${Number(levelForm.difficulty) === item.value ? 'border-primary bg-primary text-white' : 'border-outline-variant bg-surface-container-lowest text-on-surface'}`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="grid gap-2">
+              <span className="text-sm font-medium text-on-surface-variant">Poin Hadiah</span>
+              <div className="flex items-center gap-3">
+                <button type="button" onClick={() => setLevelForm(p => ({...p, points: Math.max(0, Number(p.points) - 1)}))} className="rounded-full border-2 border-outline-variant px-3 py-1 hover:bg-surface-container-lowest">-</button>
+                <div className="min-w-8 text-center font-semibold">{levelForm.points}</div>
+                <button type="button" onClick={() => setLevelForm(p => ({...p, points: Number(p.points) + 1}))} className="rounded-full border-2 border-outline-variant px-3 py-1 hover:bg-surface-container-lowest">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm text-on-surface-variant">Editor payload terstruktur</p>

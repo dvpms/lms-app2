@@ -52,13 +52,16 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  Game: 'Game',
+  GameLevel: 'GameLevel',
   Subject: 'Subject',
   Material: 'Material',
   Quiz: 'Quiz',
   Question: 'Question',
   Option: 'Option',
   Submission: 'Submission',
-  ActivityLog: 'ActivityLog'
+  ActivityLog: 'ActivityLog',
+  Testimonial: 'Testimonial'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -90,6 +93,36 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const GameScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  title: 'title',
+  description: 'description',
+  emoji: 'emoji',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GameScalarFieldEnum = (typeof GameScalarFieldEnum)[keyof typeof GameScalarFieldEnum]
+
+
+export const GameLevelScalarFieldEnum = {
+  id: 'id',
+  gameId: 'gameId',
+  levelKey: 'levelKey',
+  order: 'order',
+  difficulty: 'difficulty',
+  points: 'points',
+  payload: 'payload',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GameLevelScalarFieldEnum = (typeof GameLevelScalarFieldEnum)[keyof typeof GameLevelScalarFieldEnum]
 
 
 export const SubjectScalarFieldEnum = {
@@ -130,6 +163,7 @@ export const QuestionScalarFieldEnum = {
   quizId: 'quizId',
   text: 'text',
   image: 'image',
+  solutionImage: 'solutionImage',
   points: 'points'
 } as const
 
@@ -167,6 +201,18 @@ export const ActivityLogScalarFieldEnum = {
 } as const
 
 export type ActivityLogScalarFieldEnum = (typeof ActivityLogScalarFieldEnum)[keyof typeof ActivityLogScalarFieldEnum]
+
+
+export const TestimonialScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  rating: 'rating',
+  quote: 'quote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TestimonialScalarFieldEnum = (typeof TestimonialScalarFieldEnum)[keyof typeof TestimonialScalarFieldEnum]
 
 
 export const SortOrder = {

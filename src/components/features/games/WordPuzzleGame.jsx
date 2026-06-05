@@ -25,6 +25,9 @@ export default function WordPuzzleGame({ level, onComplete }) {
   const completedRef = useRef(false)
   completedRef.current = completed
 
+  // Backward compatibility: use answers or hiddenWords
+  const wordsList = Array.isArray(level.answers) ? level.answers : Array.isArray(level.hiddenWords) ? level.hiddenWords : []
+
   async function awardPointsOnce() {
     if (completedRef.current || awardingRef.current) return
     awardingRef.current = true
@@ -61,7 +64,7 @@ export default function WordPuzzleGame({ level, onComplete }) {
     setSelected(newSelected)
 
     const word = newSelected.map(([r, c]) => level.grid[r][c]).join('')
-    const matchedWord = level.hiddenWords.find(
+    const matchedWord = wordsList.find(
       (hw) => hw === word || hw === word.split('').reverse().join(''),
     )
 
@@ -70,7 +73,7 @@ export default function WordPuzzleGame({ level, onComplete }) {
       setFoundWords(updated)
       setSelected([])
 
-      if (updated.length === level.hiddenWords.length && !completed) {
+      if (updated.length === wordsList.length && !completed) {
         void awardPointsOnce()
       }
     }
@@ -79,7 +82,7 @@ export default function WordPuzzleGame({ level, onComplete }) {
   return (
     <div className="flex flex-col gap-6 items-center">
       <div className="flex flex-wrap gap-2 justify-center">
-        {level.hiddenWords.map((word) => {
+        {wordsList.map((word) => {
           const found = foundWords.find((fw) => fw.word === word)
           return (
             <span

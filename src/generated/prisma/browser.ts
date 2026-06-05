@@ -23,6 +23,16 @@ export * from './enums.ts';
  */
 export type User = Prisma.UserModel
 /**
+ * Model Game
+ * 
+ */
+export type Game = Prisma.GameModel
+/**
+ * Model GameLevel
+ * 
+ */
+export type GameLevel = Prisma.GameLevelModel
+/**
  * Model Subject
  * 
  */
@@ -57,3 +67,8 @@ export type Submission = Prisma.SubmissionModel
  * 
  */
 export type ActivityLog = Prisma.ActivityLogModel
+/**
+ * Model Testimonial
+ * 
+ */
+export type Testimonial = Prisma.TestimonialModel

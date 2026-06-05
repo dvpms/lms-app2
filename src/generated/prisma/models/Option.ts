@@ -337,10 +337,6 @@ export type OptionUncheckedUpdateManyWithoutQuestionNestedInput = {
   deleteMany?: Prisma.OptionScalarWhereInput | Prisma.OptionScalarWhereInput[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type OptionCreateWithoutQuestionInput = {
   id?: string
   text: string

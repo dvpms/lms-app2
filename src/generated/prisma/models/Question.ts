@@ -39,6 +39,7 @@ export type QuestionMinAggregateOutputType = {
   quizId: string | null
   text: string | null
   image: string | null
+  solutionImage: string | null
   points: number | null
 }
 
@@ -47,6 +48,7 @@ export type QuestionMaxAggregateOutputType = {
   quizId: string | null
   text: string | null
   image: string | null
+  solutionImage: string | null
   points: number | null
 }
 
@@ -55,6 +57,7 @@ export type QuestionCountAggregateOutputType = {
   quizId: number
   text: number
   image: number
+  solutionImage: number
   points: number
   _all: number
 }
@@ -73,6 +76,7 @@ export type QuestionMinAggregateInputType = {
   quizId?: true
   text?: true
   image?: true
+  solutionImage?: true
   points?: true
 }
 
@@ -81,6 +85,7 @@ export type QuestionMaxAggregateInputType = {
   quizId?: true
   text?: true
   image?: true
+  solutionImage?: true
   points?: true
 }
 
@@ -89,6 +94,7 @@ export type QuestionCountAggregateInputType = {
   quizId?: true
   text?: true
   image?: true
+  solutionImage?: true
   points?: true
   _all?: true
 }
@@ -184,6 +190,7 @@ export type QuestionGroupByOutputType = {
   quizId: string
   text: string
   image: string | null
+  solutionImage: string | null
   points: number
   _count: QuestionCountAggregateOutputType | null
   _avg: QuestionAvgAggregateOutputType | null
@@ -215,6 +222,7 @@ export type QuestionWhereInput = {
   quizId?: Prisma.StringFilter<"Question"> | string
   text?: Prisma.StringFilter<"Question"> | string
   image?: Prisma.StringNullableFilter<"Question"> | string | null
+  solutionImage?: Prisma.StringNullableFilter<"Question"> | string | null
   points?: Prisma.IntFilter<"Question"> | number
   quiz?: Prisma.XOR<Prisma.QuizScalarRelationFilter, Prisma.QuizWhereInput>
   options?: Prisma.OptionListRelationFilter
@@ -225,6 +233,7 @@ export type QuestionOrderByWithRelationInput = {
   quizId?: Prisma.SortOrder
   text?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
+  solutionImage?: Prisma.SortOrderInput | Prisma.SortOrder
   points?: Prisma.SortOrder
   quiz?: Prisma.QuizOrderByWithRelationInput
   options?: Prisma.OptionOrderByRelationAggregateInput
@@ -238,6 +247,7 @@ export type QuestionWhereUniqueInput = Prisma.AtLeast<{
   quizId?: Prisma.StringFilter<"Question"> | string
   text?: Prisma.StringFilter<"Question"> | string
   image?: Prisma.StringNullableFilter<"Question"> | string | null
+  solutionImage?: Prisma.StringNullableFilter<"Question"> | string | null
   points?: Prisma.IntFilter<"Question"> | number
   quiz?: Prisma.XOR<Prisma.QuizScalarRelationFilter, Prisma.QuizWhereInput>
   options?: Prisma.OptionListRelationFilter
@@ -248,6 +258,7 @@ export type QuestionOrderByWithAggregationInput = {
   quizId?: Prisma.SortOrder
   text?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
+  solutionImage?: Prisma.SortOrderInput | Prisma.SortOrder
   points?: Prisma.SortOrder
   _count?: Prisma.QuestionCountOrderByAggregateInput
   _avg?: Prisma.QuestionAvgOrderByAggregateInput
@@ -264,6 +275,7 @@ export type QuestionScalarWhereWithAggregatesInput = {
   quizId?: Prisma.StringWithAggregatesFilter<"Question"> | string
   text?: Prisma.StringWithAggregatesFilter<"Question"> | string
   image?: Prisma.StringNullableWithAggregatesFilter<"Question"> | string | null
+  solutionImage?: Prisma.StringNullableWithAggregatesFilter<"Question"> | string | null
   points?: Prisma.IntWithAggregatesFilter<"Question"> | number
 }
 
@@ -271,6 +283,7 @@ export type QuestionCreateInput = {
   id?: string
   text: string
   image?: string | null
+  solutionImage?: string | null
   points?: number
   quiz: Prisma.QuizCreateNestedOneWithoutQuestionsInput
   options?: Prisma.OptionCreateNestedManyWithoutQuestionInput
@@ -281,6 +294,7 @@ export type QuestionUncheckedCreateInput = {
   quizId: string
   text: string
   image?: string | null
+  solutionImage?: string | null
   points?: number
   options?: Prisma.OptionUncheckedCreateNestedManyWithoutQuestionInput
 }
@@ -289,6 +303,7 @@ export type QuestionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  solutionImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.IntFieldUpdateOperationsInput | number
   quiz?: Prisma.QuizUpdateOneRequiredWithoutQuestionsNestedInput
   options?: Prisma.OptionUpdateManyWithoutQuestionNestedInput
@@ -299,6 +314,7 @@ export type QuestionUncheckedUpdateInput = {
   quizId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  solutionImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.IntFieldUpdateOperationsInput | number
   options?: Prisma.OptionUncheckedUpdateManyWithoutQuestionNestedInput
 }
@@ -308,6 +324,7 @@ export type QuestionCreateManyInput = {
   quizId: string
   text: string
   image?: string | null
+  solutionImage?: string | null
   points?: number
 }
 
@@ -315,6 +332,7 @@ export type QuestionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  solutionImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -323,6 +341,7 @@ export type QuestionUncheckedUpdateManyInput = {
   quizId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  solutionImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -341,6 +360,7 @@ export type QuestionCountOrderByAggregateInput = {
   quizId?: Prisma.SortOrder
   text?: Prisma.SortOrder
   image?: Prisma.SortOrder
+  solutionImage?: Prisma.SortOrder
   points?: Prisma.SortOrder
 }
 
@@ -353,6 +373,7 @@ export type QuestionMaxOrderByAggregateInput = {
   quizId?: Prisma.SortOrder
   text?: Prisma.SortOrder
   image?: Prisma.SortOrder
+  solutionImage?: Prisma.SortOrder
   points?: Prisma.SortOrder
 }
 
@@ -361,6 +382,7 @@ export type QuestionMinOrderByAggregateInput = {
   quizId?: Prisma.SortOrder
   text?: Prisma.SortOrder
   image?: Prisma.SortOrder
+  solutionImage?: Prisma.SortOrder
   points?: Prisma.SortOrder
 }
 
@@ -433,6 +455,7 @@ export type QuestionCreateWithoutQuizInput = {
   id?: string
   text: string
   image?: string | null
+  solutionImage?: string | null
   points?: number
   options?: Prisma.OptionCreateNestedManyWithoutQuestionInput
 }
@@ -441,6 +464,7 @@ export type QuestionUncheckedCreateWithoutQuizInput = {
   id?: string
   text: string
   image?: string | null
+  solutionImage?: string | null
   points?: number
   options?: Prisma.OptionUncheckedCreateNestedManyWithoutQuestionInput
 }
@@ -479,6 +503,7 @@ export type QuestionScalarWhereInput = {
   quizId?: Prisma.StringFilter<"Question"> | string
   text?: Prisma.StringFilter<"Question"> | string
   image?: Prisma.StringNullableFilter<"Question"> | string | null
+  solutionImage?: Prisma.StringNullableFilter<"Question"> | string | null
   points?: Prisma.IntFilter<"Question"> | number
 }
 
@@ -486,6 +511,7 @@ export type QuestionCreateWithoutOptionsInput = {
   id?: string
   text: string
   image?: string | null
+  solutionImage?: string | null
   points?: number
   quiz: Prisma.QuizCreateNestedOneWithoutQuestionsInput
 }
@@ -495,6 +521,7 @@ export type QuestionUncheckedCreateWithoutOptionsInput = {
   quizId: string
   text: string
   image?: string | null
+  solutionImage?: string | null
   points?: number
 }
 
@@ -518,6 +545,7 @@ export type QuestionUpdateWithoutOptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  solutionImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.IntFieldUpdateOperationsInput | number
   quiz?: Prisma.QuizUpdateOneRequiredWithoutQuestionsNestedInput
 }
@@ -527,6 +555,7 @@ export type QuestionUncheckedUpdateWithoutOptionsInput = {
   quizId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  solutionImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -534,6 +563,7 @@ export type QuestionCreateManyQuizInput = {
   id?: string
   text: string
   image?: string | null
+  solutionImage?: string | null
   points?: number
 }
 
@@ -541,6 +571,7 @@ export type QuestionUpdateWithoutQuizInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  solutionImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.IntFieldUpdateOperationsInput | number
   options?: Prisma.OptionUpdateManyWithoutQuestionNestedInput
 }
@@ -549,6 +580,7 @@ export type QuestionUncheckedUpdateWithoutQuizInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  solutionImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.IntFieldUpdateOperationsInput | number
   options?: Prisma.OptionUncheckedUpdateManyWithoutQuestionNestedInput
 }
@@ -557,6 +589,7 @@ export type QuestionUncheckedUpdateManyWithoutQuizInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  solutionImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -596,6 +629,7 @@ export type QuestionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   quizId?: boolean
   text?: boolean
   image?: boolean
+  solutionImage?: boolean
   points?: boolean
   quiz?: boolean | Prisma.QuizDefaultArgs<ExtArgs>
   options?: boolean | Prisma.Question$optionsArgs<ExtArgs>
@@ -607,6 +641,7 @@ export type QuestionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   quizId?: boolean
   text?: boolean
   image?: boolean
+  solutionImage?: boolean
   points?: boolean
   quiz?: boolean | Prisma.QuizDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["question"]>
@@ -616,6 +651,7 @@ export type QuestionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   quizId?: boolean
   text?: boolean
   image?: boolean
+  solutionImage?: boolean
   points?: boolean
   quiz?: boolean | Prisma.QuizDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["question"]>
@@ -625,10 +661,11 @@ export type QuestionSelectScalar = {
   quizId?: boolean
   text?: boolean
   image?: boolean
+  solutionImage?: boolean
   points?: boolean
 }
 
-export type QuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "quizId" | "text" | "image" | "points", ExtArgs["result"]["question"]>
+export type QuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "quizId" | "text" | "image" | "solutionImage" | "points", ExtArgs["result"]["question"]>
 export type QuestionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   quiz?: boolean | Prisma.QuizDefaultArgs<ExtArgs>
   options?: boolean | Prisma.Question$optionsArgs<ExtArgs>
@@ -652,6 +689,7 @@ export type $QuestionPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     quizId: string
     text: string
     image: string | null
+    solutionImage: string | null
     points: number
   }, ExtArgs["result"]["question"]>
   composites: {}
@@ -1082,6 +1120,7 @@ export interface QuestionFieldRefs {
   readonly quizId: Prisma.FieldRef<"Question", 'String'>
   readonly text: Prisma.FieldRef<"Question", 'String'>
   readonly image: Prisma.FieldRef<"Question", 'String'>
+  readonly solutionImage: Prisma.FieldRef<"Question", 'String'>
   readonly points: Prisma.FieldRef<"Question", 'Int'>
 }
     

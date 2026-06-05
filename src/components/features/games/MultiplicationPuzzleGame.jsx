@@ -75,8 +75,8 @@ function buildEquationParts(parts, blanks, slotValues) {
 }
 
 /**
- * Evaluate equation like "4 * 3 = 12" or "_ * _ = 36".
- * Operator tokens are expected to already be arithmetic operators in game data.
+ * Evaluate equation like "4 * 3 = 12" or "_ x _ = 36".
+ * Maps friendly operators (x, ×, :, ÷) to JS operators (*, /) before eval.
  */
 function checkCompletion(parts, blanks, slotValues) {
   const filledParts = parts.map((part, i) => {
@@ -89,8 +89,12 @@ function checkCompletion(parts, blanks, slotValues) {
   try {
     const expr = filledParts.join(' ')
     const [lhs, rhs] = expr.split('=').map((s) => s.trim())
+    
+    // Transform human-friendly symbols into javascript operators
+    const sanitizedLhs = lhs.replace(/x|×/gi, '*').replace(/:|÷/g, '/')
+    
     // eslint-disable-next-line no-eval
-    const lhsValue = Number(eval(lhs))
+    const lhsValue = Number(eval(sanitizedLhs))
     const rhsValue = Number(rhs)
 
     if (!Number.isFinite(lhsValue) || !Number.isFinite(rhsValue)) return false

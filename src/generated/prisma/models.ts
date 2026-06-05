@@ -9,6 +9,8 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User.ts'
+export type * from './models/Game.ts'
+export type * from './models/GameLevel.ts'
 export type * from './models/Subject.ts'
 export type * from './models/Material.ts'
 export type * from './models/Quiz.ts'
@@ -16,4 +18,5 @@ export type * from './models/Question.ts'
 export type * from './models/Option.ts'
 export type * from './models/Submission.ts'
 export type * from './models/ActivityLog.ts'
+export type * from './models/Testimonial.ts'
 export type * from './commonInputTypes.ts'
