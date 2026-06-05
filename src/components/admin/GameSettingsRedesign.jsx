@@ -66,17 +66,26 @@ export default function GameSettingsRedesign({ games = [], onEditLevel, onPrevie
     const payload = level.payload ?? level.payloadJson ?? null
     if (!payload) return []
 
+    const getFromObj = (obj) => {
+      if (Array.isArray(obj.words) && obj.words.length > 0) return obj.words
+      if (Array.isArray(obj.correctOrder) && obj.correctOrder.length > 0) return obj.correctOrder
+      if (Array.isArray(obj.answers) && obj.answers.length > 0) return obj.answers
+      if (Array.isArray(obj.hiddenWords) && obj.hiddenWords.length > 0) return obj.hiddenWords
+      if (obj.equation?.parts && Array.isArray(obj.equation.parts) && obj.equation.parts.length > 0) return obj.equation.parts
+      if (Array.isArray(obj.tiles) && obj.tiles.length > 0) return obj.tiles
+      return []
+    }
+
     // if payload already object
     if (typeof payload === 'object') {
-      const obj = payload
-      return Array.isArray(obj.words) ? obj.words : Array.isArray(obj.correctOrder) ? obj.correctOrder : []
+      return getFromObj(payload)
     }
 
     // if payload is JSON string
     if (typeof payload === 'string') {
       try {
         const obj = JSON.parse(payload)
-        return Array.isArray(obj.words) ? obj.words : Array.isArray(obj.correctOrder) ? obj.correctOrder : []
+        return getFromObj(obj)
       } catch {
         return []
       }
@@ -223,8 +232,8 @@ export default function GameSettingsRedesign({ games = [], onEditLevel, onPrevie
                                 <div className="rounded-2xl bg-white p-4">
                                   <p className="mb-3 text-sm font-bold">Content Builder</p>
                                   <div className="flex flex-wrap gap-2">
-                                    {getLevelWords(level).map((word) => (
-                                      <span key={word} className="rounded-2xl border bg-slate-50 px-4 py-2 text-sm font-semibold">{word}</span>
+                                    {getLevelWords(level).map((word, wIdx) => (
+                                      <span key={`${word}-${wIdx}`} className="rounded-2xl border bg-slate-50 px-4 py-2 text-sm font-semibold">{word}</span>
                                     ))}
                                   </div>
                                   <p className="mt-4 text-xs leading-5 text-slate-500">Data utama ditampilkan sebagai form/chip agar lebih mudah dibaca. Raw JSON tetap bisa dibuka melalui tombol Advanced Editor.</p>
