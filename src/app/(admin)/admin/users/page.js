@@ -5,12 +5,15 @@ import Card from '@/components/ui/Card'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Spinner from '@/components/ui/Spinner'
-import { Users, UserRound, GraduationCap } from 'lucide-react'
+import Modal from '@/components/ui/Modal'
+import Input from '@/components/ui/Input'
+import { Users, UserRound, GraduationCap, Plus } from 'lucide-react'
 
 const FILTERS = [
   { label: 'Semua', value: 'ALL' },
   { label: 'Student', value: 'STUDENT' },
   { label: 'Teacher', value: 'TEACHER' },
+  { label: 'Admin', value: 'ADMIN' },
 ]
 
 function formatDate(value) {
@@ -26,45 +29,78 @@ function formatDate(value) {
 
 function RoleIcon({ role }) {
   if (role === 'TEACHER') return <GraduationCap className="size-5 text-primary" />
+  if (role === 'ADMIN') return <Users className="size-5 text-tertiary" />
   return <UserRound className="size-5 text-secondary" />
 }
 
 export default function AdminUsersPage() {
   const [activeFilter, setActiveFilter] = useState('ALL')
   const [users, setUsers] = useState([])
-  const [meta, setMeta] = useState({ totalUsers: 0, totalStudents: 0, totalTeachers: 0 })
+  const [meta, setMeta] = useState({ totalUsers: 0, totalStudents: 0, totalTeachers: 0, totalAdmins: 0 })
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
 
+  // Modal State
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [newUserData, setNewUserData] = useState({ name: '', email: '', password: '', role: 'TEACHER' })
+  const [isCreating, setIsCreating] = useState(false)
+  const [createError, setCreateError] = useState('')
+
   useEffect(() => {
-    async function fetchUsers() {
-      try {
-        setIsLoading(true)
-        setIsError(false)
-
-        const params = new URLSearchParams()
-        if (activeFilter !== 'ALL') {
-          params.set('role', activeFilter)
-        }
-
-        const res = await fetch(`/api/admin/users${params.toString() ? `?${params.toString()}` : ''}`)
-        const json = await res.json()
-        if (!res.ok) {
-          setIsError(true)
-          return
-        }
-
-        setUsers(json.data ?? [])
-        setMeta(json.meta ?? { totalUsers: 0, totalStudents: 0, totalTeachers: 0 })
-      } catch {
-        setIsError(true)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
     fetchUsers()
   }, [activeFilter])
+
+  async function fetchUsers() {
+    try {
+      setIsLoading(true)
+      setIsError(false)
+
+      const params = new URLSearchParams()
+      if (activeFilter !== 'ALL') {
+        params.set('role', activeFilter)
+      }
+
+      const res = await fetch(`/api/admin/users${params.toString() ? `?${params.toString()}` : ''}`)
+      const json = await res.json()
+      if (!res.ok) {
+        setIsError(true)
+        return
+      }
+
+      setUsers(json.data ?? [])
+      setMeta(json.meta ?? { totalUsers: 0, totalStudents: 0, totalTeachers: 0, totalAdmins: 0 })
+    } catch {
+      setIsError(true)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  async function handleCreateUser(e) {
+    e.preventDefault()
+    setIsCreating(true)
+    setCreateError('')
+
+    try {
+      const res = await fetch('/api/admin/users/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUserData),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setCreateError(data.error || 'Gagal membuat user')
+      } else {
+        setIsCreateModalOpen(false)
+        setNewUserData({ name: '', email: '', password: '', role: 'TEACHER' })
+        fetchUsers() // refresh list
+      }
+    } catch (err) {
+      setCreateError('Terjadi kesalahan server')
+    } finally {
+      setIsCreating(false)
+    }
+  }
 
   const summaryCards = useMemo(() => ([
     { label: 'Total User', value: meta.totalUsers, icon: <Users className="size-6 text-primary" /> },
@@ -72,7 +108,7 @@ export default function AdminUsersPage() {
     { label: 'Teacher', value: meta.totalTeachers, icon: <GraduationCap className="size-6 text-tertiary" /> },
   ]), [meta])
 
-  if (isLoading) {
+  if (isLoading && users.length === 0) {
     return (
       <div className="flex justify-center items-center min-h-64">
         <Spinner />
@@ -80,15 +116,23 @@ export default function AdminUsersPage() {
     )
   }
 
-  if (isError) {
+  if (isError && users.length === 0) {
     return <p className="text-error text-center p-6">Gagal memuat data users.</p>
   }
 
   return (
     <div className="max-w-6xl mx-auto flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold text-on-surface">Users</h1>
-        <p className="text-sm text-on-surface-variant">Lihat semua student dan teacher yang sudah mendaftar. Halaman ini read-only.</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-on-surface">Users</h1>
+            <p className="text-sm text-on-surface-variant">Kelola akun student, teacher, dan admin.</p>
+          </div>
+          <Button onClick={() => setIsCreateModalOpen(true)} className="flex items-center gap-2">
+            <Plus size={18} />
+            Tambah User
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -123,7 +167,7 @@ export default function AdminUsersPage() {
           <div className="text-center py-12 text-on-surface-variant">
             <Users size={40} className="mx-auto mb-3 opacity-40" />
             <p className="font-semibold">Belum ada user</p>
-            <p className="text-sm mt-1">Data student dan teacher akan muncul di sini.</p>
+            <p className="text-sm mt-1">Data user akan muncul di sini.</p>
           </div>
         </Card>
       ) : (
@@ -145,7 +189,7 @@ export default function AdminUsersPage() {
                       <p className="font-semibold text-on-surface truncate">{user.name}</p>
                       <p className="text-sm text-on-surface-variant truncate">{user.email}</p>
                     </div>
-                    <Badge variant={user.role === 'TEACHER' ? 'primary' : 'secondary'}>
+                    <Badge variant={user.role === 'TEACHER' ? 'primary' : (user.role === 'ADMIN' ? 'tertiary' : 'secondary')}>
                       {user.role}
                     </Badge>
                   </div>
@@ -168,6 +212,57 @@ export default function AdminUsersPage() {
           ))}
         </div>
       )}
+
+      {/* Create User Modal */}
+      <Modal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)}>
+        <h2 className="text-xl font-bold text-on-surface mb-4">Tambah User Baru</h2>
+        <form onSubmit={handleCreateUser} className="flex flex-col gap-4">
+          <Input 
+            label="Nama Lengkap" 
+            placeholder="John Doe" 
+            required 
+            value={newUserData.name}
+            onChange={(e) => setNewUserData(prev => ({ ...prev, name: e.target.value }))}
+          />
+          <Input 
+            label="Email" 
+            type="email" 
+            placeholder="john@example.com" 
+            required 
+            value={newUserData.email}
+            onChange={(e) => setNewUserData(prev => ({ ...prev, email: e.target.value }))}
+          />
+          <Input 
+            label="Password" 
+            type="password" 
+            placeholder="Minimal 6 karakter" 
+            required 
+            value={newUserData.password}
+            onChange={(e) => setNewUserData(prev => ({ ...prev, password: e.target.value }))}
+          />
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-semibold text-on-surface-variant">Role</label>
+            <select
+              className="w-full min-h-12 rounded-xl bg-surface-container-low px-4 text-on-surface outline-none ring-1 ring-outline-variant focus:ring-2 focus:ring-primary transition-all"
+              value={newUserData.role}
+              onChange={(e) => setNewUserData(prev => ({ ...prev, role: e.target.value }))}
+            >
+              <option value="STUDENT">Student</option>
+              <option value="TEACHER">Teacher</option>
+              <option value="ADMIN">Admin (Full Akses)</option>
+            </select>
+          </div>
+
+          {createError && <p className="text-sm text-error">{createError}</p>}
+
+          <div className="flex justify-end gap-2 mt-4">
+            <Button type="button" variant="ghost" onClick={() => setIsCreateModalOpen(false)}>Batal</Button>
+            <Button type="submit" disabled={isCreating}>
+              {isCreating ? 'Menyimpan...' : 'Simpan User'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   )
 }

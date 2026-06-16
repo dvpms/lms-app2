@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, BookOpen, HelpCircle, Users, MessageCircle, School, Gamepad2 } from 'lucide-react'
+import { signOut } from 'next-auth/react'
+import { LayoutDashboard, BookOpen, HelpCircle, Users, MessageCircle, School, Gamepad2, LogOut } from 'lucide-react'
 import clsx from 'clsx'
 
 const navLinks = [
@@ -43,6 +44,15 @@ export default function AdminSidebar() {
           )
         })}
       </nav>
+      <div className="px-3 py-4 border-t border-on-primary/20">
+        <button
+          onClick={() => signOut({ callbackUrl: '/login' })}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-on-primary/70 hover:text-error hover:bg-error/10 transition-colors"
+        >
+          <LogOut className="size-5" />
+          <span>Logout</span>
+        </button>
+      </div>
     </aside>
   )
 }
