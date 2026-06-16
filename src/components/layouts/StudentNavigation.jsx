@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import { useSelector } from 'react-redux'
 import { Home, BookOpen, Trophy, MessageCircleQuestionMark, Gamepad2 } from 'lucide-react'
 import clsx from 'clsx'
+import StudentProfileMenu from '@/components/layouts/StudentProfileMenu'
 
 const ALL_NAV_LINKS = [
   { href: '/student/dashboard', label: 'Beranda', icon: Home, teacherAllowed: false },
@@ -73,17 +74,15 @@ export default function StudentNavigation() {
             />
           ))}
         </nav>
-        {user && !isTeacher && (
-          <div className="flex items-center gap-3 text-on-primary text-sm font-semibold">
-            <span>⭐ {user.points} pts</span>
-            <span className="bg-on-primary/20 rounded-full px-3 py-1">Lv.{user.level}</span>
-          </div>
-        )}
-        {isTeacher && (
-          <div className="flex items-center gap-2 text-on-primary text-sm font-semibold">
-            <span className="bg-on-primary/20 rounded-full px-3 py-1">Guru</span>
-          </div>
-        )}
+        <div className="flex items-center gap-3">
+         
+          {isTeacher && (
+            <div className="flex items-center gap-2 text-on-primary text-sm font-semibold">
+              <span className="bg-on-primary/20 rounded-full px-3 py-1">Guru</span>
+            </div>
+          )}
+          <StudentProfileMenu />
+        </div>
       </header>
 
       {/* Mobile bottom bar */}
