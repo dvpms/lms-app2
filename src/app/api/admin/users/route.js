@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { prisma } from '@/lib/prisma'
 
-const ALLOWED_ROLES = ['STUDENT', 'TEACHER']
+const ALLOWED_ROLES = ['STUDENT', 'TEACHER', 'ADMIN']
 
 function normalizeRole(role) {
   if (!role) return null
@@ -23,7 +23,7 @@ export async function GET(request) {
 
     const where = role ? { role } : { role: { in: ALLOWED_ROLES } }
 
-    const [users, totalUsers, totalStudents, totalTeachers] = await Promise.all([
+    const [users, totalUsers, totalStudents, totalTeachers, totalAdmins] = await Promise.all([
       prisma.user.findMany({
         where,
         select: {
@@ -41,6 +41,7 @@ export async function GET(request) {
       prisma.user.count({ where: { role: { in: ALLOWED_ROLES } } }),
       prisma.user.count({ where: { role: 'STUDENT' } }),
       prisma.user.count({ where: { role: 'TEACHER' } }),
+      prisma.user.count({ where: { role: 'ADMIN' } }),
     ])
 
     return NextResponse.json({
@@ -49,6 +50,7 @@ export async function GET(request) {
         totalUsers,
         totalStudents,
         totalTeachers,
+        totalAdmins,
         activeRole: role ?? 'ALL',
       },
     })
