@@ -13,7 +13,6 @@ const FILTERS = [
   { label: 'Semua', value: 'ALL' },
   { label: 'Student', value: 'STUDENT' },
   { label: 'Teacher', value: 'TEACHER' },
-  { label: 'Admin', value: 'ADMIN' },
 ]
 
 function formatDate(value) {
@@ -106,7 +105,6 @@ export default function AdminUsersPage() {
     { label: 'Total User', value: meta.totalUsers, icon: <Users className="size-6 text-primary" /> },
     { label: 'Student', value: meta.totalStudents, icon: <UserRound className="size-6 text-secondary" /> },
     { label: 'Teacher', value: meta.totalTeachers, icon: <GraduationCap className="size-6 text-tertiary" /> },
-    { label: 'Admin', value: meta.totalAdmins, icon: <Users className="size-6 text-tertiary" /> },
   ]), [meta])
 
   if (isLoading && users.length === 0) {
@@ -191,7 +189,7 @@ export default function AdminUsersPage() {
                       <p className="text-sm text-on-surface-variant truncate">{user.email}</p>
                     </div>
                     <Badge variant={user.role === 'TEACHER' ? 'primary' : (user.role === 'ADMIN' ? 'tertiary' : 'secondary')}>
-                      {user.role}
+                      {user.role === 'ADMIN' ? 'TEACHER (FULL AKSES)' : user.role}
                     </Badge>
                   </div>
 
@@ -250,7 +248,7 @@ export default function AdminUsersPage() {
             >
               <option value="STUDENT">Student</option>
               <option value="TEACHER">Teacher</option>
-              <option value="ADMIN">Admin (Full Akses)</option>
+              <option value="ADMIN">Teacher (Full Akses)</option>
             </select>
           </div>
 
