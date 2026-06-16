@@ -106,6 +106,7 @@ export default function AdminUsersPage() {
     { label: 'Total User', value: meta.totalUsers, icon: <Users className="size-6 text-primary" /> },
     { label: 'Student', value: meta.totalStudents, icon: <UserRound className="size-6 text-secondary" /> },
     { label: 'Teacher', value: meta.totalTeachers, icon: <GraduationCap className="size-6 text-tertiary" /> },
+    { label: 'Admin', value: meta.totalAdmins, icon: <Users className="size-6 text-tertiary" /> },
   ]), [meta])
 
   if (isLoading && users.length === 0) {
