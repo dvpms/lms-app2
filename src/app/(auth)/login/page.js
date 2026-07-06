@@ -114,7 +114,7 @@ export default function LoginPage() {
               >
                 <option value="student">Murid</option>
                 <option value="teacher">Guru</option>
-                <option value="teacher">Admin</option>
+                <option value="admin">Admin</option>
               </select>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-on-surface-variant">
                 <ChevronDown className="h-5 w-5" aria-hidden="true" />
