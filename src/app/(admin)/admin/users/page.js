@@ -189,7 +189,7 @@ export default function AdminUsersPage() {
                       <p className="text-sm text-on-surface-variant truncate">{user.email}</p>
                     </div>
                     <Badge variant={user.role === 'TEACHER' ? 'primary' : (user.role === 'ADMIN' ? 'tertiary' : 'secondary')}>
-                      {user.role === 'ADMIN' ? 'TEACHER (FULL AKSES)' : user.role}
+                      {user.role === 'ADMIN' ? 'Admin' : user.role}
                     </Badge>
                   </div>
 
@@ -248,7 +248,7 @@ export default function AdminUsersPage() {
             >
               <option value="STUDENT">Student</option>
               <option value="TEACHER">Teacher</option>
-              <option value="ADMIN">Teacher (Full Akses)</option>
+              <option value="ADMIN">Admin</option>
             </select>
           </div>
 
