@@ -35,7 +35,11 @@ export default function LoginPage() {
     setLoading(false)
 
     if (result?.error) {
-      setError('Email atau password salah')
+      if (result.error.includes('ACCOUNT_PENDING')) {
+        setError('Akun Anda sedang menunggu persetujuan Admin.')
+      } else {
+        setError('Email atau password salah')
+      }
       return
     }
 

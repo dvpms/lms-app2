@@ -7,7 +7,7 @@ import Button from '@/components/ui/Button'
 import Spinner from '@/components/ui/Spinner'
 import Modal from '@/components/ui/Modal'
 import Input from '@/components/ui/Input'
-import { Users, UserRound, GraduationCap, Plus } from 'lucide-react'
+import { Users, UserRound, GraduationCap, Plus, Trash2 } from 'lucide-react'
 
 const FILTERS = [
   { label: 'Semua', value: 'ALL' },
@@ -98,6 +98,44 @@ export default function AdminUsersPage() {
       setCreateError('Terjadi kesalahan server')
     } finally {
       setIsCreating(false)
+    }
+  }
+
+  async function handleApproveUser(id) {
+    // dynamically import Swal or use window.Swal if available, but it's better to just import it at top
+    try {
+      const res = await fetch(`/api/admin/users/${id}/approve`, {
+        method: 'POST',
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        alert(data.error || 'Gagal menyetujui user')
+        return
+      }
+      // Refresh user list
+      fetchUsers()
+    } catch (err) {
+      alert('Terjadi kesalahan server saat menyetujui user')
+    }
+  }
+
+  async function handleDeleteUser(id, name) {
+    if (!confirm(`Apakah Anda yakin ingin menghapus user ${name}? Tindakan ini tidak dapat dibatalkan.`)) {
+      return
+    }
+
+    try {
+      const res = await fetch(`/api/admin/users/${id}`, {
+        method: 'DELETE',
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        alert(data.error || 'Gagal menghapus user')
+        return
+      }
+      fetchUsers()
+    } catch (err) {
+      alert('Terjadi kesalahan server saat menghapus user')
     }
   }
 
@@ -194,6 +232,28 @@ export default function AdminUsersPage() {
                   </div>
 
                   <p className="text-xs text-on-surface-variant mt-2">Terdaftar {formatDate(user.createdAt)}</p>
+                  
+                  <div className="mt-3 flex items-center justify-between">
+                    <div>
+                      {!user.isApproved && (
+                        <span className="text-xs font-semibold text-error bg-error/10 px-2 py-1 rounded-md">Pending Approval</span>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      {!user.isApproved && (
+                        <Button size="sm" variant="success" onClick={() => handleApproveUser(user.id)}>
+                          Setujui
+                        </Button>
+                      )}
+                      <button
+                        onClick={() => handleDeleteUser(user.id, user.name)}
+                        className="flex items-center justify-center size-9 rounded-xl bg-error/10 text-error hover:bg-error/20 transition-colors"
+                        title="Hapus User"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 

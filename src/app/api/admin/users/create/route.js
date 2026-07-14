@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { prisma } from '@/lib/prisma'
+import { sendApprovalEmail } from '@/lib/email'
 
 export async function POST(request) {
   try {
@@ -30,9 +31,12 @@ export async function POST(request) {
     }
 
     const user = await prisma.user.create({
-      data: { name, email, password: hashedPassword, role },
+      data: { name, email, password: hashedPassword, role, isApproved: true },
       select: { id: true, name: true, email: true, role: true, createdAt: true, level: true, points: true, avatar: true },
     })
+
+    // Send email notification with password
+    await sendApprovalEmail({ email, name, password })
 
     return NextResponse.json({ data: user }, { status: 201 })
   } catch (error) {
