@@ -15,6 +15,7 @@ model User {
   role         Role          @default(STUDENT)
   points       Int           @default(0)
   level        Int           @default(1)
+  isApproved   Boolean       @default(true)
   avatar       String?
   createdAt    DateTime      @default(now())
   submissions  Submission[]

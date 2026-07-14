@@ -22,8 +22,8 @@ export async function POST(request) {
     const assignedRole = allowedRoles.includes(role) ? role : 'STUDENT'
 
     const user = await prisma.user.create({
-      data: { name, email, password: hashedPassword, role: assignedRole },
-      select: { id: true, name: true, email: true, role: true },
+      data: { name, email, password: hashedPassword, role: assignedRole, isApproved: false },
+      select: { id: true, name: true, email: true, role: true, isApproved: true },
     })
 
     return NextResponse.json({ data: user }, { status: 201 })

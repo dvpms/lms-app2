@@ -86,7 +86,7 @@ export default function RegisterPage() {
       await Swal.fire({
         icon: 'success',
         title: 'Registrasi Berhasil',
-        text: 'Akun berhasil dibuat. Silakan login.',
+        text: 'Akun Anda berhasil dibuat. Harap tunggu persetujuan dari Admin. Pemberitahuan akan dikirimkan melalui email setelah disetujui.',
         confirmButtonText: 'OK',
       });
       router.push('/login');

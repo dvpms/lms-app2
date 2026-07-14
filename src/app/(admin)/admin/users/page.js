@@ -101,6 +101,24 @@ export default function AdminUsersPage() {
     }
   }
 
+  async function handleApproveUser(id) {
+    // dynamically import Swal or use window.Swal if available, but it's better to just import it at top
+    try {
+      const res = await fetch(`/api/admin/users/${id}/approve`, {
+        method: 'POST',
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        alert(data.error || 'Gagal menyetujui user')
+        return
+      }
+      // Refresh user list
+      fetchUsers()
+    } catch (err) {
+      alert('Terjadi kesalahan server saat menyetujui user')
+    }
+  }
+
   const summaryCards = useMemo(() => ([
     { label: 'Total User', value: meta.totalUsers, icon: <Users className="size-6 text-primary" /> },
     { label: 'Student', value: meta.totalStudents, icon: <UserRound className="size-6 text-secondary" /> },
@@ -194,6 +212,15 @@ export default function AdminUsersPage() {
                   </div>
 
                   <p className="text-xs text-on-surface-variant mt-2">Terdaftar {formatDate(user.createdAt)}</p>
+                  
+                  {!user.isApproved && (
+                    <div className="mt-3 flex items-center justify-between">
+                      <span className="text-xs font-semibold text-error bg-error/10 px-2 py-1 rounded-md">Pending Approval</span>
+                      <Button size="sm" variant="success" onClick={() => handleApproveUser(user.id)}>
+                        Setujui
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 

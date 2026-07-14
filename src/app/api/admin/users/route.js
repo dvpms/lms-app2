@@ -34,6 +34,7 @@ export async function GET(request) {
           points: true,
           level: true,
           avatar: true,
+          isApproved: true,
           createdAt: true,
         },
         orderBy: { createdAt: 'desc' },
