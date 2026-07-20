@@ -24,10 +24,6 @@ export const authOptions = {
 
         if (!user) return null;
 
-        if (!user.isApproved) {
-          throw new Error("ACCOUNT_PENDING")
-        }
-
         const isValid = await bcrypt.compare(
           credentials.password,
           user.password,
